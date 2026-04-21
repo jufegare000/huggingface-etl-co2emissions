@@ -1,6 +1,4 @@
 
-
-
 huggingface-etl-co3emissions
 
 A reproducible, fault-tolerant ETL pipeline built on AWS Glue and PySpark to extract, enrich, and consolidate Hugging Face model metadata into a curated analytical dataset for large-scale sustainability and performance analysis.
@@ -126,7 +124,7 @@ Typical fields:
 - `auto`
 
 ## Proposed Project Structure
-
+```text
 hf-co2-pipeline/  
 ├── README.md  
 ├── LICENSE  
@@ -158,7 +156,7 @@ hf-co2-pipeline/
 │   └── fixtures/  
 └── infra/  
     └── terraform/
-
+```
 ## Workflow
 
 ### 1. Raw Ingestion
@@ -202,14 +200,14 @@ Recommended AWS services:
 ## Entry Point
 
 A single Glue entry point can dispatch specific jobs by argument:
-
+```json
 JOB_MAP = {  
     "raw_ingestion": run_raw_ingestion,  
     "enrich_models": run_enrich_models,  
     "enrich_datasets": run_enrich_datasets,  
     "curate_gold": run_curate_gold,  
 }
-
+```
 Example Glue argument:
 
 --job_name enrich_models
