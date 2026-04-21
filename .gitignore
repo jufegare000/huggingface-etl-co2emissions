@@ -43,7 +43,7 @@ poetry.lock
 # Pipenv
 Pipfile.lock
 
-# Unit test / coverage reports
+# Unit tests / coverage reports
 htmlcov/
 .tox/
 .nox/
