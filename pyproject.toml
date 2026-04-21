@@ -1,0 +1,89 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hf-co2-pipeline"
+version = "0.1.0"
+description = "A reproducible, fault-tolerant ETL pipeline on AWS Glue and PySpark for Hugging Face model metadata enrichment."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Juan F. Gallo" }
+]
+keywords = [
+  "aws-glue",
+  "pyspark",
+  "etl",
+  "huggingface",
+  "data-engineering",
+  "s3"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: OS Independent"
+]
+
+dependencies = [
+  "pandas>=2.1,<3.0",
+  "awswrangler>=3.8,<4.0",
+  "huggingface_hub>=0.24,<1.0",
+  "requests>=2.31,<3.0",
+  "tqdm>=4.66,<5.0",
+  "boto3>=1.34,<2.0",
+  "python-dotenv>=1.0,<2.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0,<9.0",
+  "pytest-mock>=3.12,<4.0",
+  "coverage>=7.4,<8.0",
+  "ruff>=0.5,<1.0",
+  "black>=24.0,<25.0",
+  "mypy>=1.10,<2.0"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = []
+
+[tool.coverage.run]
+source = ["src/hf_co2_pipeline"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
