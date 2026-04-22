@@ -81,7 +81,7 @@ logs/
 *.out
 *.err
 
-# Local environment / secrets
+# Local environment / secrets_config
 .env
 .env.*
 !.env.example
