@@ -1,5 +1,7 @@
 import sys
-import requests
+import boto3
+import json
+from botocore.exceptions import ClientError
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
@@ -7,31 +9,32 @@ from awsglue.job import Job
 
 args = getResolvedOptions(sys.argv, [
     'JOB_NAME',
-    'output_bucket',
+    'hf_token_secret_name',
     'partition_id',
     'emission_min',
     'emission_max'
 ])
+
+
+def get_hf_token(secret_name):
+    client = boto3.client('secretsmanager')
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
+    except ClientError as e:
+        print(f"Error recuperando el secreto: {e}")
+        raise e
+
+    return get_secret_value_response['SecretString']
+
 
 sc = SparkContext()
 glueContext = GlueContext(sc)
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
+hf_token = get_hf_token(args['hf_token_secret_name'])
 
-def fetch_hf_data(e_min, e_max):
+print(f"Token recuperado con éxito para la partición {args['partition_id']}")
 
-    print(f"Querying HF API for the following emission ranges: {e_min} - {e_max}")
 
-    return [{"model_id": "test/model", "co2": 15.0}]
-
-try:
-    data = fetch_hf_data(args['emission_min'], args['emission_max'])
-
-    print(f"Procesadas {len(data)} entradas para la partición {args['partition_id']}")
-
-    job.commit()
-    print("JOB_STATUS: SUCCESS")
-except Exception as e:
-    print(f"JOB_STATUS: FAILED - Error: {str(e)}")
-    sys.exit(1)
+job.commit()

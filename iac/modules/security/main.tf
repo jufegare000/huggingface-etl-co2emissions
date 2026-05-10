@@ -69,3 +69,54 @@ resource "aws_iam_role_policy" "glue_secrets_policy" {
     ]
   })
 }
+
+# 1. Rol de IAM para Step Functions
+resource "aws_iam_role" "sfn_role" {
+  name = "${var.project_name}-sfn-role-${var.environment}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = { Service = "states.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "sfn_policy" {
+  name = "${var.project_name}-sfn-policy-${var.environment}"
+  role = aws_iam_role.sfn_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowLambdaInvoke"
+        Effect = "Allow"
+        Action = "lambda:InvokeFunction"
+        Resource = [var.lambda_arn]
+      },
+      {
+        Sid    = "AllowGlueManagement"
+        Effect = "Allow"
+        Action = [
+          "glue:StartJobRun",
+          "glue:GetJobRun",
+          "glue:BatchStopJobRun"
+        ]
+        Resource = [var.glue_job_arn]
+      },
+      {
+        Sid    = "AllowSyncExecution"
+        Effect = "Allow"
+        Action = [
+          "events:PutTargets",
+          "events:PutRule",
+          "events:DescribeRule"
+        ]
+        Resource = ["*"]
+      }
+    ]
+  })
+}

@@ -53,7 +53,6 @@ def build_partition_descriptors(
         partition_id = boundary["partition_id"]
         partitions.append({
             "partition_id": partition_id,
-            # 2. El bucket específico de IAC ahora se refleja aquí
             "input_path": f"s3://{bucket}/prepared/partition_id={partition_id}/models.csv",
             "thread_count": config["threads_per_worker"],
             "emission_min": boundary["emission_min"],

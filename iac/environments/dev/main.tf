@@ -10,6 +10,7 @@ module "security" {
   project_name  = var.project_name
   environment   = var.environment
   bucket_name   = module.s3_etl_dev.bucket_id 
+  hf_token_secret_arn = module.hf_secrets.secret_arn
 }
 
 module "data_prep_lambda" {
