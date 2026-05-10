@@ -120,3 +120,18 @@ checkpoints/
 # Keep sample fixtures if needed
 !tests/fixtures/
 !tests/fixtures/**
+
+.terraform/
+
+# Archivos de estado de Terraform (¡NUNCA SE DEBEN SUBIR AL REPOSITORIO!)
+*.tfstate
+*.tfstate.backup
+
+# Archivos de variables con secretos
+*.tfvars
+*.tfvars.json
+
+# Archivos de bloqueo y logs de error
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
