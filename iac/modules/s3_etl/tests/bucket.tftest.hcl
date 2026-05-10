@@ -1,3 +1,4 @@
+# terraform/modules/s3_etl/tests/bucket.tftest.hcl
 
 provider "aws" {
   region  = "us-east-1"
@@ -5,10 +6,10 @@ provider "aws" {
 }
 
 variables {
-  project_name = "hugging-face-project"
-  environment  = "test"
+  project_name    = "hugging-face-project"
+  environment     = "test"
+  lambda_role_arn = "arn:aws:iam::123456789012:role/test-lambda-role"
 }
-
 
 run "validate_bucket_name" {
   command = plan

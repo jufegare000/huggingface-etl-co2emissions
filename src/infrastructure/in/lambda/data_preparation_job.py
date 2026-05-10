@@ -1,29 +1,29 @@
 import json
+import os
 from typing import Any, Dict, List
 
 
 def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
+    bucket_name = os.environ.get("RAW_BUCKET_NAME", "my-default-bucket")
+
     return {
-        "source_csv_path": event.get("source_csv_path", "s3://my-bucket/input/models.csv"),
+        "source_csv_path": event.get("source_csv_path", f"s3://{bucket_name}/input/models.csv"),
         "workers": event.get("workers", 4),
         "threads_per_worker": event.get("threads_per_worker", 8),
+        "bucket_name": bucket_name
     }
 
 
 def validate_input(config: Dict[str, Any]) -> None:
-
     if config["workers"] <= 0:
         raise ValueError("workers must be > 0")
-
     if config["threads_per_worker"] <= 0:
         raise ValueError("threads_per_worker must be > 0")
-
     if not config["source_csv_path"]:
         raise ValueError("source_csv_path is required")
 
 
 def load_models_metadata(config: Dict[str, Any]) -> List[Dict[str, Any]]:
-
     return [
         {"model_id": "org/model-a", "co2_eq_emissions": 10.5},
         {"model_id": "org/model-b", "co2_eq_emissions": 25.0},
@@ -33,8 +33,8 @@ def load_models_metadata(config: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def calculate_percentile_boundaries(
-    models: List[Dict[str, Any]],
-    workers: int,
+        models: List[Dict[str, Any]],
+        workers: int,
 ) -> List[Dict[str, float]]:
     return [
         {"partition_id": i, "emission_min": i * 10.0, "emission_max": (i + 1) * 10.0}
@@ -43,40 +43,37 @@ def calculate_percentile_boundaries(
 
 
 def build_partition_descriptors(
-    boundaries: List[Dict[str, float]],
-    config: Dict[str, Any],
+        boundaries: List[Dict[str, float]],
+        config: Dict[str, Any],
 ) -> List[Dict[str, Any]]:
-
     partitions = []
+    bucket = config["bucket_name"]
 
     for boundary in boundaries:
         partition_id = boundary["partition_id"]
-
         partitions.append({
             "partition_id": partition_id,
-            "input_path": f"s3://my-bucket/prepared/partition_id={partition_id}/models.csv",
+            # 2. El bucket específico de IAC ahora se refleja aquí
+            "input_path": f"s3://{bucket}/prepared/partition_id={partition_id}/models.csv",
             "thread_count": config["threads_per_worker"],
             "emission_min": boundary["emission_min"],
             "emission_max": boundary["emission_max"],
             "status": "PENDING",
         })
-
     return partitions
 
 
-def persist_preparation_output(partitions: List[Dict[str, Any]]) -> Dict[str, Any]:
-
+def persist_preparation_output(partitions: List[Dict[str, Any]], bucket: str) -> Dict[str, Any]:
     return {
-        "manifest_path": "s3://my-bucket/prepared/manifest.json",
+        "manifest_path": f"s3://{bucket}/prepared/manifest.json",
         "partitions_count": len(partitions),
     }
 
 
 def build_step_function_output(
-    partitions: List[Dict[str, Any]],
-    persistence_result: Dict[str, Any],
+        partitions: List[Dict[str, Any]],
+        persistence_result: Dict[str, Any],
 ) -> Dict[str, Any]:
-
     return {
         "manifest_path": persistence_result["manifest_path"],
         "partitions_count": persistence_result["partitions_count"],
@@ -84,13 +81,13 @@ def build_step_function_output(
     }
 
 
-def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     config = load_input_manifest(event)
     validate_input(config)
 
     models = load_models_metadata(config)
     boundaries = calculate_percentile_boundaries(models, config["workers"])
     partitions = build_partition_descriptors(boundaries, config)
-    persistence_result = persist_preparation_output(partitions)
+    persistence_result = persist_preparation_output(partitions, config["bucket_name"])
 
     return build_step_function_output(partitions, persistence_result)
