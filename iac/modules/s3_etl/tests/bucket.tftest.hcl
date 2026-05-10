@@ -10,7 +10,6 @@ variables {
 }
 
 
-
 run "validate_bucket_name" {
   command = plan
 

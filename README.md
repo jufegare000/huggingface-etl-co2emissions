@@ -8,7 +8,7 @@ This project builds a production-oriented data pipeline to collect and enrich me
 
 The architecture follows a layered approach:
 
-- **Bronze**: raw snapshot of Hugging Face model metadata
+- ~~~~**Bronze**: raw snapshot of Hugging Face model metadata
 - **Silver Models**: enriched model-level metadata
 - **Silver Datasets**: enriched dataset-level metadata
 - **Gold**: curated analytical dataset ready for querying and visualization
