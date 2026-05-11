@@ -11,3 +11,6 @@ plan-dev: validate-dev
 
 deploy-dev: plan-dev
 	cd iac/environments/dev && terraform apply tfplan
+
+destroy-dev:
+	cd iac/environments/dev && terraform destroy
