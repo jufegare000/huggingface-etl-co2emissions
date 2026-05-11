@@ -9,4 +9,5 @@ module "workflow" {
   lambda_arn    = local.lambda_arn_calculated
 
   output_bucket = module.s3_etl_dev.bucket_id
+  hf_token_secret_name = module.hf_secrets.secret_arn
 }

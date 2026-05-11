@@ -25,3 +25,7 @@ variable "output_bucket" {
   description = "Bucket name for output"
   type        = string
 }
+
+variable "hf_token_secret_name" {
+  type = string
+}

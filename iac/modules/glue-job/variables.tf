@@ -22,4 +22,8 @@ variable "script_path" {
 variable "max_retries" {
   type    = number
   default = 0
+} 
+
+variable "hf_token_secret_name" {
+  type = string
 }

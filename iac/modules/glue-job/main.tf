@@ -24,5 +24,7 @@ resource "aws_glue_job" "huggingface_ingestion" {
     "--output_bucket"                    = var.s3_bucket_id
 
     "--additional-python-modules" = "huggingface_hub,requests,pandas"
+    "--hf_token_secret_name"   = var.hf_token_secret_name
+
   }
 }
