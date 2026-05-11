@@ -68,18 +68,17 @@ def persist_preparation_output(partitions: List[Dict[str, Any]], bucket: str) ->
         "partitions_count": len(partitions),
     }
 
-
 def build_step_function_output(
         partitions: List[Dict[str, Any]],
         persistence_result: Dict[str, Any],
+        bucket_name: str,
 ) -> Dict[str, Any]:
     return {
+        "bucket_name": bucket_name,
         "manifest_path": persistence_result["manifest_path"],
         "partitions_count": persistence_result["partitions_count"],
         "partitions": partitions,
     }
-
-
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     config = load_input_manifest(event)
     validate_input(config)
@@ -89,4 +88,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     partitions = build_partition_descriptors(boundaries, config)
     persistence_result = persist_preparation_output(partitions, config["bucket_name"])
 
-    return build_step_function_output(partitions, persistence_result)
+    return build_step_function_output(
+        partitions,
+        persistence_result,
+        config["bucket_name"],
+    )

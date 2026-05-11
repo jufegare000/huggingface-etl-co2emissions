@@ -5,8 +5,8 @@ resource "aws_s3_bucket_policy" "allow_lambda_read" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "AllowLambdaReadAccess"
-        Effect    = "Allow"
+        Sid    = "AllowLambdaReadAccess"
+        Effect = "Allow"
         Principal = {
           AWS = var.lambda_role_arn
         }

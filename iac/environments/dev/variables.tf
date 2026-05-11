@@ -1,7 +1,7 @@
 variable "hf_token" {
   description = "de Hugging Face Token (environment variable)"
   type        = string
-  sensitive   = true  
+  sensitive   = true
 }
 
 variable "aws_region" {

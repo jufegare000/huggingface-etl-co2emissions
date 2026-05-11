@@ -1,25 +1,25 @@
 variable "project_name" {
-  type        = string
+  type = string
 }
 
 variable "environment" {
-  type        = string
+  type = string
 }
 
 variable "s3_bucket_id" {
-  type        = string
+  type = string
 }
 
 variable "glue_role_arn" {
-  type        = string
+  type = string
 }
 
 variable "script_path" {
-  type        = string
-  default     = "scripts/raw_ingestion.py"
+  type    = string
+  default = "scripts/raw_ingestion.py"
 }
 
 variable "max_retries" {
-  type        = number
-  default     = 0
+  type    = number
+  default = 0
 }

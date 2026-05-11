@@ -3,8 +3,11 @@
 init-dev:
 	cd iac/environments/dev && terraform init
 
-plan-dev: init-dev
-	cd iac/environments/dev && terraform plan
+validate-dev: init-dev
+	cd iac/environments/dev && terraform validate
 
-deploy-dev: init-dev
-	cd iac/environments/dev && terraform apply
+plan-dev: validate-dev
+	cd iac/environments/dev && terraform plan -out=tfplan
+
+deploy-dev: plan-dev
+	cd iac/environments/dev && terraform apply tfplan

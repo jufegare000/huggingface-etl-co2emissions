@@ -7,7 +7,7 @@ variables {
   function_name    = "test-data-prep-lambda"
   source_file_path = "src/infrastructure/in/lambda/data_preparation_job.py"
   handler          = "data_preparation_job.handler"
-  lambda_role_arn  = "arn:aws:iam::123456789012:role/test-role" 
+  lambda_role_arn  = "arn:aws:iam::123456789012:role/test-role"
   environment_variables = {
     "DEBUG" = "true"
     "TEST"  = "unit-test"

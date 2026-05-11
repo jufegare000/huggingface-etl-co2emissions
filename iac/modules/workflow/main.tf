@@ -6,14 +6,14 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
     StartAt = "DataPreparation",
     States = {
       "DataPreparation" = {
-        Type     = "Task",
-        Resource = var.lambda_arn,
-        ResultPath = "$", 
-        Next     = "IngestionMap"
+        Type       = "Task",
+        Resource   = var.lambda_arn,
+        ResultPath = "$",
+        Next       = "IngestionMap"
       },
       "IngestionMap" = {
-        Type        = "Map",
-        ItemsPath   = "$.partitions",
+        Type           = "Map",
+        ItemsPath      = "$.partitions",
         MaxConcurrency = 5,
         Parameters = {
           "partition.$"   = "$$.Map.Item.Value",
@@ -28,9 +28,9 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
               Parameters = {
                 "JobName" = var.glue_job_name,
                 "Arguments" = {
-                  "--partition_id.$" = "States.Format('{}', $.partition.partition_id)",
-                  "--emission_min.$" = "States.Format('{}', $.partition.emission_min)",
-                  "--emission_max.$" = "States.Format('{}', $.partition.emission_max)",
+                  "--partition_id.$"  = "States.Format('{}', $.partition.partition_id)",
+                  "--emission_min.$"  = "States.Format('{}', $.partition.emission_min)",
+                  "--emission_max.$"  = "States.Format('{}', $.partition.emission_max)",
                   "--output_bucket.$" = "$.bucket_name"
                 }
               },
