@@ -37,13 +37,10 @@ ENV/
 # Pyenv
 .python-version
 
-# Poetry
 poetry.lock
 
-# Pipenv
 Pipfile.lock
 
-# Unit test / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -56,32 +53,26 @@ coverage.xml
 *.py,cover
 .hypothesis/
 
-# Type checkers / linters
 .mypy_cache/
 .dmypy.json
 dmypy.json
 .ruff_cache/
 .pyre/
 
-# Jupyter
 .ipynb_checkpoints/
 
-# IDEs / editors
 .vscode/
 .idea/
 *.iml
 
-# OS files
 .DS_Store
 Thumbs.db
 
-# Logs
 *.log
 logs/
 *.out
 *.err
 
-# Local environment / secrets
 .env
 .env.*
 !.env.example
@@ -89,14 +80,12 @@ secrets/
 *.pem
 *.key
 
-# AWS / Glue local artifacts
 .aws/
 .glue/
 spark-warehouse/
 metastore_db/
 derby.log
 
-# Terraform
 .terraform/
 .terraform.lock.hcl
 *.tfstate
@@ -107,7 +96,6 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Local data artifacts
 data/
 tmp/
 temp/
@@ -117,6 +105,17 @@ checkpoints/
 *.csv
 *.jsonl
 
-# Keep sample fixtures if needed
 !tests/fixtures/
 !tests/fixtures/**
+
+.terraform/
+
+iac/environments/dev/tfplan
+*.tfstate.backup
+
+*.tfvars
+*.tfvars.json
+
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
