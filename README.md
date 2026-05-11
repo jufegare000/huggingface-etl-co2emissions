@@ -1,4 +1,4 @@
-huggingface-etl-co3emissions
+# huggingface-etl-co3emissions
 
 A reproducible, fault-tolerant ETL pipeline built on AWS Glue and PySpark to extract, enrich, and consolidate Hugging Face model metadata into a curated analytical dataset for large-scale sustainability and performance analysis.
 
@@ -17,13 +17,11 @@ The architecture follows a layered approach:
 
 - Extract Hugging Face models with reported CO2 emissions
 - Enrich model metadata with model size, library, domain, training metadata, and performance information
-- Enrich referenced datasets with dataset-level metadata such as dataset sizegggggggg
+- Enrich referenced datasets with dataset-level metadata such as dataset size
 - Build a curated final dataset for analysis
 - Ensure the pipeline is reproducible, fault-tolerant, and suitable for cloud deployment
 
 ## Architecture
-
-<img src="ETL.png" alt="Description" >
 
 ```text
 Hugging Face API
@@ -35,12 +33,12 @@ Hugging Face API
  Bronze Snapshot
     /        \
    v          v
-Model       Dataset
-Enrichment  Enrichment
+Model        Dataset
+Enrichment   Enrichment
    |          |
    v          v
-Silver      Silver
-Models      Datasets
+Silver       Silver
+Models       Datasets
     \        /
      v      v
  Final Consolidation
@@ -50,7 +48,6 @@ Models      Datasets
         |
         v
 Analytics / Visualization
-
 ```
 
 ## Key Features
@@ -61,6 +58,7 @@ Analytics / Visualization
 - Controlled parallelism for external API calls
 - PySpark-based transformations for scalable joins, aggregation, normalization, and curation
 - Cloud-native deployment using AWS Glue, S3, and optionally Athena and Step Functions
+- **Modular Infrastructure as Code (IaC)** using Terraform with native unit testing.
 
 ## Data Layers
 
@@ -69,7 +67,6 @@ Analytics / Visualization
 Raw snapshot of Hugging Face models reporting CO2 emissions.
 
 Typical fields:
-
 - `model_id`
 - `co2_eq_emissions`
 - `downloads`
@@ -84,7 +81,6 @@ Typical fields:
 Model-level enrichment.
 
 Typical fields:
-
 - `model_id`
 - `model_size_mb`
 - `is_autotrain`
@@ -98,7 +94,6 @@ Typical fields:
 Dataset-level enrichment.
 
 Typical fields:
-
 - `dataset_id`
 - `dataset_size`
 - optional dataset metadata
@@ -108,7 +103,6 @@ Typical fields:
 Final curated analytical dataset combining model and dataset enrichment.
 
 Typical fields:
-
 - `model_id`
 - `datasets`
 - `datasets_size`
@@ -126,12 +120,16 @@ Typical fields:
 - `created_at`
 - `auto`
 
-## Proposed Project Structure
+## Project Structure
 
 ```text
 hf-co2-pipeline/  
 ├── README.md  
 ├── LICENSE  
+├── Makefile                 <-- Task orchestration (tests, deploys)
+├── makefiles/               <-- Modular Makefile configurations
+│   ├── deploys.mk
+│   └── tests.mk
 ├── pyproject.toml  
 ├── requirements.txt  
 ├── requirements-dev.txt  
@@ -158,32 +156,49 @@ hf-co2-pipeline/
 │   ├── unit/  
 │   ├── integration/  
 │   └── fixtures/  
-└── infra/  
-    └── terraform/
+└── terraform/               <-- Infrastructure as Code
+    ├── environments/
+    │   └── dev/             <-- Development environment deployment
+    │       ├── main.tf
+    │       ├── outputs.tf
+    │       ├── providers.tf
+    │       ├── terraform.tfvars
+    │       └── variables.tf
+    └── modules/
+        └── s3_etl/          <-- Reusable S3 infrastructure module
+            ├── main.tf
+            ├── outputs.tf
+            ├── variables.tf
+            ├── versions.tf
+            └── tests/       <-- Native Terraform tests
+                └── bucket.tftest.hcl
 ```
+
+## Infrastructure as Code (IaC)
+
+The cloud infrastructure is provisioned using a clean, modular **Terraform** architecture. 
+
+- **Modules:** Reusable components (e.g., `s3_etl`) containing the exact specifications for AWS resources.
+- **Environments:** Environment-specific configurations (e.g., `dev`, `prod`) that instantiate modules using `.tfvars` to inject correct naming conventions and variables.
+- **Orchestration:** A root-level `Makefile` abstracts Terraform commands, ensuring consistent execution across tests and deployments.
 
 ## Workflow
 
 ### 1. Raw Ingestion
-
 Extract a raw snapshot of Hugging Face models and persist it to S3.
 
 ### 2. Model Enrichment
-
 Process model IDs incrementally and enrich them with model-level metadata.
 
 ### 3. Dataset Enrichment
-
 Extract unique dataset references and enrich them separately to avoid redundant API calls.
 
 ### 4. Final Consolidation
-
 Join Silver Models and Silver Datasets, apply schema normalization, and publish the Gold dataset.
 
 ## Fault Tolerance Strategy
 
 The pipeline includes:
-
 - checkpointing for long-running enrichment jobs
 - retry with exponential backoff for API rate limits
 - persistence of failed records for later reprocessing
@@ -193,7 +208,6 @@ The pipeline includes:
 ## Cloud Deployment
 
 Recommended AWS services:
-
 - AWS Glue for ETL execution
 - Amazon S3 for Bronze, Silver, and Gold storage
 - AWS Glue Data Catalog for metadata management
@@ -216,63 +230,63 @@ JOB_MAP = {
 ```
 
 Example Glue argument:
-
---job_name enrich_models
+`--job_name enrich_models`
 
 ## Testing Strategy
 
-This project should include:
+This project includes tests for both application logic and infrastructure.
 
-### Unit tests
+### Python Unit & Integration Tests
+Focused on logic such as dataset extraction, model size computation, CO2 metadata parsing, and local execution over sample parquet files.
+- Suggested tooling: `pytest`, `pytest-mock`, `coverage`, `ruff`, `black`
 
-Focused on pure logic such as:
-
-- dataset extraction
-- model size computation
-- CO2 metadata parsing
-- metrics parsing
-- schema validation
-- retry behavior
-
-### Integration tests
-
-Focused on:
-
-- local execution over sample parquet files
-- mocked Hugging Face API responses
-- end-to-end behavior of each job
-
-Suggested tooling:
-
-- `pytest`
-- `pytest-mock`
-- `coverage`
-- `ruff`
-- `black`
+### Infrastructure Tests (IaC)
+Native Terraform unit tests (`.tftest.hcl`) validate module configurations and resource properties in memory (via `terraform plan`) before any real resources are provisioned on AWS.
 
 ## Local Development
 
+### Python Setup
 Install dependencies:
-
+```bash
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
+```
 
-Run tests:
-
-pytest
-
-Run linting:
-
+Run Python linting:
+```bash
 ruff check .
 black --check .
+```
+
+### Running Tests (Python & IaC)
+The Makefile orchestrates all infrastructure tests automatically:
+```bash
+# Run Terraform unit tests across all modules
+make test
+
+# Run Python tests
+pytest
+```
+
+### Deploying Infrastructure
+Use the Makefile to plan and deploy environments securely:
+```bash
+# Preview changes for the Dev environment
+make plan-dev
+
+# Deploy infrastructure to the Dev environment
+make deploy-dev
+
+# Destroy Dev infrastructure (Use with caution)
+make destroy-dev
+```
 
 ## Future Improvements
 
 - Apache Iceberg support for transactional tables
 - CI/CD pipeline for automated testing and deployment
-- Terraform-based infrastructure provisioning
-- data quality validation layer
-- monitoring dashboards for job metrics and API failures
+- Data quality validation layer
+- Monitoring dashboards for job metrics and API failures
 
 ## Use Cases
 
