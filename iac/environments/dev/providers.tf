@@ -1,5 +1,3 @@
-# terraform/modules/s3_etl/versions.tf
-
 terraform {
   required_providers {
     aws = {
@@ -7,4 +5,9 @@ terraform {
       version = ">= 4.0"
     }
   }
+}
+
+provider "aws" {
+  region  = "us-east-1"
+  profile = "expe"
 }
