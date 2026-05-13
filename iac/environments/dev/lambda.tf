@@ -9,5 +9,7 @@ module "data_prep_lambda" {
   environment_variables = {
     RAW_BUCKET_NAME = module.s3_etl_dev.bucket_id
     ENVIRONMENT     = var.environment
+    CONTROL_TABLE_NAME = module.dynamodb_enrichment_control.table_name
+    CONTROL_TABLE_ARN  = module.dynamodb_enrichment_control.table_arn
   }
 }

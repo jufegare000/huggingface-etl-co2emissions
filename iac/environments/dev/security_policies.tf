@@ -12,6 +12,7 @@ module "security_policies" {
   lambda_role_name = module.security_base.lambda_role_name
   glue_role_name   = module.security_base.glue_role_name
   sfn_role_name    = module.security_base.sfn_role_name
-
+  dynamodb_control_table_arn = module.dynamodb_enrichment_control.table_arn
   lambda_env_kms_key_arn = module.kms.key_arn
 }
+

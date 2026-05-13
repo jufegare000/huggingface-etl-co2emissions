@@ -6,4 +6,11 @@ locals {
   lambda_arn_calculated = "arn:aws:lambda:${local.aws_region}:${local.account_id}:function:${local.project_name}-data-prep-${var.environment}"
 
   glue_job_arn_calculated = "arn:aws:glue:${local.aws_region}:${local.account_id}:job/${local.project_name}-raw-ingestion-${var.environment}"
+
+  tags = {
+    Project     = local.project_name
+    Environment = var.environment
+    ManagedBy   = "terraform"
+    Component   = "etl"
+  }
 }
