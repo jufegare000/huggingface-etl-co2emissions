@@ -67,5 +67,5 @@ variable "python_version" {
 variable "additional_python_modules" {
   description = "Comma-separated Python modules installed by Glue."
   type        = string
-  default     = "huggingface_hub,boto3,botocore"
+  default     =  "requests,boto3,botocore"
 }

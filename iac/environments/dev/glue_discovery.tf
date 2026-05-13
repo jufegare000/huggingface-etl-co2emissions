@@ -9,7 +9,7 @@ resource "aws_s3_object" "glue_discovery_script" {
 module "glue_discovery_job" {
   source = "../../modules/glue-discovery"
 
-  project_name = var.project_name
+  project_name = local.project_name
   environment  = var.environment
 
   s3_bucket_id       = module.s3_etl_dev.bucket_id

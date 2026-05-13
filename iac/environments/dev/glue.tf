@@ -1,7 +1,7 @@
 module "glue_ingestion_job" {
   source = "../../modules/glue-job"
 
-  project_name = var.project_name
+  project_name = local.project_name
   environment  = var.environment
 
   s3_bucket_id  = module.s3_etl_dev.bucket_id

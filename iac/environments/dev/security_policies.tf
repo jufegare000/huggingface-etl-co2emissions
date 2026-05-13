@@ -1,7 +1,7 @@
 module "security_policies" {
   source = "../../modules/security_policies"
 
-  project_name = var.project_name
+  project_name = local.project_name
   environment  = var.environment
 
   bucket_name         = module.s3_etl_dev.bucket_id
