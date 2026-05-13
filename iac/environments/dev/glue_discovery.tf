@@ -16,9 +16,8 @@ module "glue_discovery_job" {
   output_bucket_name = module.s3_etl_dev.bucket_id
 
   glue_role_arn        = module.security_base.glue_role_arn
+  script_path          = "scripts/discovery.py"
   hf_token_secret_name = module.hf_secrets.secret_arn
-
-  script_path = "scripts/discovery.py"
 
   depends_on = [
     aws_s3_object.glue_discovery_script
