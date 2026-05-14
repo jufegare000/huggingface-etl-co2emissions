@@ -664,8 +664,6 @@ def run_discovery() -> Dict[str, Any]:
 
             page_number += 1
 
-            # Important: save the cursor of the NEXT page only after successfully
-            # processing the current page.
             next_cursor = new_next_cursor
 
             checkpoint["status"] = "RUNNING"

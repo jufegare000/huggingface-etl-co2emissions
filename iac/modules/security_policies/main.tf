@@ -88,7 +88,8 @@ resource "aws_iam_role_policy" "glue_dynamodb_control_policy" {
         Action = [
           "dynamodb:GetItem",
           "dynamodb:UpdateItem",
-          "dynamodb:PutItem"
+          "dynamodb:PutItem",
+          "dynamodb:Query"
         ]
         Resource = var.dynamodb_control_table_arn
       }
