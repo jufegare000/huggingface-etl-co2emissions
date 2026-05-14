@@ -33,10 +33,10 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
               Parameters = {
                 "JobName" = var.glue_job_name,
                 "Arguments" = {
-                  "--run_id.$"               = "$.run_id",
-                  "--partition_id.$"         = "$.partition.partition_id",
-                  "--control_table_name.$"   = "$.control_table_name",
-                  "--hf_token_secret_name"   = var.hf_token_secret_name
+                  "--run_id.$"             = "$.run_id",
+                  "--partition_id.$"       = "$.partition.partition_id",
+                  "--control_table_name.$" = "$.control_table_name",
+                  "--hf_token_secret_name" = var.hf_token_secret_name
                 }
               },
               End = true
@@ -44,6 +44,22 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
           }
         },
 
+        ResultPath = "$.ingestion_results",
+        Next       = "GlueEnrichment"
+      },
+
+      "GlueEnrichment" = {
+        Type     = "Task",
+        Resource = "arn:aws:states:::glue:startJobRun.sync",
+        Parameters = {
+          "JobName" = var.enrichment_glue_job_name,
+          "Arguments" = {
+            "--run_id.$"             = "$.run_id",
+            "--control_table_name.$" = "$.control_table_name",
+            "--source_bucket.$"      = "$.bucket_name",
+            "--target_bucket.$"      = "$.bucket_name"
+          }
+        },
         End = true
       }
     }

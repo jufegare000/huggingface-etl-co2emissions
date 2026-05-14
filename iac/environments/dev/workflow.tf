@@ -10,4 +10,5 @@ module "workflow" {
 
   output_bucket = module.s3_etl_dev.bucket_id
   hf_token_secret_name = module.hf_secrets.secret_arn
+  enrichment_glue_job_name = module.glue_gold_job.enrichment_glue_job_name
 }

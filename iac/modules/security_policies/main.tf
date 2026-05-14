@@ -48,7 +48,7 @@ resource "aws_iam_role_policy" "sfn_policy" {
       {
         Effect   = "Allow"
         Action   = ["glue:StartJobRun", "glue:GetJobRun"]
-        Resource = [var.glue_job_arn]
+        Resource = [var.glue_job_arn, var.enrichment_glue_job_arn]
       }
     ]
   })

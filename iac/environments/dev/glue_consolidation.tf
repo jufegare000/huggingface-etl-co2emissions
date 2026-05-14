@@ -1,5 +1,5 @@
 module "glue_gold_job" {
-  source = "../../modules/glue-enrichment"
+  source = "../../modules/glue_enrichment"
 
   project_name = local.project_name
   environment  = var.environment

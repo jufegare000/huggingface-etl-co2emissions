@@ -7,7 +7,7 @@ resource "aws_glue_job" "huggingface_ingestion" {
   timeout           = 20
 
   execution_property {
-    max_concurrent_runs = 8
+    max_concurrent_runs = 20
   }
 
   command {
