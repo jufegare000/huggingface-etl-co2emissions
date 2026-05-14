@@ -1,5 +1,5 @@
-resource "aws_glue_job" "huggingface_ingestion" {
-  name     = "${var.project_name}-raw-ingestion-${var.environment}"
+resource "aws_glue_job" "gold_consolidation" {
+  name     = "${var.project_name}-gold-consolidation-${var.environment}"
   role_arn = var.glue_role_arn
 
   worker_type       = "G.1X"
@@ -7,12 +7,12 @@ resource "aws_glue_job" "huggingface_ingestion" {
   timeout           = 20
 
   execution_property {
-    max_concurrent_runs = 20
+    max_concurrent_runs = 8
   }
 
   command {
     name            = "glueetl"
-    script_location = "s3://${var.s3_bucket_id}/scripts/raw_ingestion.py"
+    script_location = "s3://${var.s3_bucket_id}/scripts/gold_consolidation.py"
     python_version  = "3"
   }
 
@@ -23,8 +23,7 @@ resource "aws_glue_job" "huggingface_ingestion" {
     "--enable-spark-ui"                  = "true"
     "--output_bucket"                    = var.s3_bucket_id
 
-    "--additional-python-modules" = "huggingface_hub,requests,pandas"
-    "--hf_token_secret_name"   = var.hf_token_secret_name
+    "--additional-python-modules" = "pandas"
 
   }
 }

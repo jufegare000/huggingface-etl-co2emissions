@@ -29,3 +29,8 @@ variable "output_bucket" {
 variable "hf_token_secret_name" {
   type = string
 }
+
+variable "enrichment_glue_job_name" {
+  type        = string
+  description = "Glue job name for enrichment / gold consolidation"
+}
