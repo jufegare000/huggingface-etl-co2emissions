@@ -62,16 +62,20 @@ gold_df.write.mode("overwrite").parquet(target_path_parquet)
 
 # 7. EXPORTACIÓN A CSV (Para LibreOffice)
 # Aplanamos el array a string para que el CSV sea compatible
-export_df = gold_df.withColumn("datasets_list", F.col("datasets_list").cast("string"))
+export_df = gold_df.withColumn("datasets_list", F.col("datasets_list").cast("string")) \
+                   .withColumn("performance_metrics", F.col("performance_metrics").cast("string"))
 
 target_path_csv = f"s3://{TARGET_BUCKET}/gold/hf-carbon/run_id={RUN_ID}/export_csv"
 
-# coalesce(1) genera un solo archivo .csv fácil de descargar
 export_df.coalesce(1).write \
     .mode("overwrite") \
     .option("header", "true") \
+    .option("delimiter", ";") \
+    .option("quote", '"') \
+    .option("escape", '"') \
     .csv(target_path_csv)
 
+print(f"CSV ultra-compatible generado en: {target_path_csv}")
 # 8. Registro final en DynamoDB
 total_records = gold_df.count()
 current_ts = datetime.utcnow().isoformat()
