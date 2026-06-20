@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 from config.raw_data_set_columns import CSV_COLUMNS
 from config.data_preparation_enum import DataPreparationConfig
+from config.injection.dependency_injector import data_parsing_service
 
 import boto3
 
@@ -118,7 +119,7 @@ def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
     if not table_name:
         raise ValueError("CONTROL_TABLE_NAME environment variable is required")
 
-    run_id = event.get("run_id", utc_now_compact())
+    run_id = event.get("run_id", data_parsing_service.utc_now_compact())
 
     return {
         "run_id": run_id,
@@ -134,9 +135,9 @@ def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
             "prepared_prefix",
             f"{DataPreparationConfig.PREPARED_PREFIX}/run_id={run_id}",
         ),
-        "global_rate_limit": int(event.get("global_rate_limit", DataPreparationConfig.GLOBAL_RATE_LIMIT)),
-        "window_seconds": int(event.get("window_seconds", DataPreparationConfig.WINDOW_SECONDS)),
-        "calls_per_model": int(event.get("calls_per_model", DataPreparationConfig.CALLS_PER_MODEL)),
+        "global_rate_limit": int(event.get("global_rate_limit", DataPreparationConfig.GLOBAL_RATE_LIMIT.value)),
+        "window_seconds": int(event.get("window_seconds", DataPreparationConfig.WINDOW_SECONDS.value)),
+        "calls_per_model": int(event.get("calls_per_model", DataPreparationConfig.CALLS_PER_MODEL.value)),
     }
 
 
@@ -207,7 +208,7 @@ def calculate_percentile_boundaries(
 ) -> List[Dict[str, Any]]:
     partition_size = max(
         1,
-        math.floor(GLOBAL_RATE_LIMIT / workers / CALLS_PER_MODEL),
+        math.floor(DataPreparationConfig.GLOBAL_RATE_LIMIT.value / workers / DataPreparationConfig.CALLS_PER_MODEL.value),
     )
 
     partitions_count = math.ceil(len(models) / partition_size)

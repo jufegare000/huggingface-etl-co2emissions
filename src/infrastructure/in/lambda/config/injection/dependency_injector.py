@@ -1,0 +1,4 @@
+from application.services.date_parsing_service_implemented import SystemDateTimeServiceImplemented
+from domain.extract.services.date_parsing_service import DataParsingService
+
+data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
