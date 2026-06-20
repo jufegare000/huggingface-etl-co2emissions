@@ -3,43 +3,24 @@ import io
 import json
 import math
 import os
-from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 from config.raw_data_set_columns import CSV_COLUMNS
 from config.data_preparation_enum import DataPreparationConfig
 from config.injection.dependency_injector import data_parsing_service
+from config.injection.dependency_injector import type_conversion_service
 
 import boto3
 
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 
-def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def utc_now_compact() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-
-
-def to_decimal(value: Any) -> Any:
-    if isinstance(value, float):
-        return Decimal(str(value))
-    if isinstance(value, dict):
-        return {k: to_decimal(v) for k, v in value.items()}
-    if isinstance(value, list):
-        return [to_decimal(v) for v in value]
-    return value
-
-
 def parse_s3_uri(uri: str) -> Dict[str, str]:
     parsed = urlparse(uri)
 
     if parsed.scheme != "s3":
         raise ValueError(f"Expected s3 URI, got: {uri}")
-
     return {
         "bucket": parsed.netloc,
         "key": parsed.path.lstrip("/"),
@@ -296,7 +277,7 @@ def persist_preparation_output(
         "global_rate_limit": config["global_rate_limit"],
         "window_seconds": config["window_seconds"],
         "calls_per_model": config["calls_per_model"],
-        "created_at": utc_now_iso(),
+        "created_at": data_parsing_service.utc_now_iso(),
         "partitions": partitions,
     }
 
@@ -305,7 +286,7 @@ def persist_preparation_output(
     table = dynamodb.Table(config["control_table_name"])
 
     table.put_item(
-        Item=to_decimal({
+        Item=type_conversion_service.convert_floats_to_decimal({
             "PK": "PIPELINE#hf-carbon",
             "SK": f"RUN#{config['run_id']}",
             "entity_type": "PREPARATION_RUN",
@@ -319,13 +300,13 @@ def persist_preparation_output(
             "global_rate_limit": config["global_rate_limit"],
             "window_seconds": config["window_seconds"],
             "calls_per_model": config["calls_per_model"],
-            "created_at": utc_now_iso(),
-            "updated_at": utc_now_iso(),
+            "created_at": data_parsing_service.utc_now_iso(),
+            "updated_at": data_parsing_service.utc_now_iso(),
         })
     )
 
     table.put_item(
-        Item=to_decimal({
+        Item=type_conversion_service.convert_floats_to_decimal({
             "PK": "PIPELINE#hf-carbon",
             "SK": "LAST_RUN",
             "entity_type": "LAST_RUN_POINTER",
@@ -334,16 +315,16 @@ def persist_preparation_output(
             "source_csv_path": config["source_csv_path"],
             "manifest_path": manifest["manifest_path"],
             "partitions_count": len(partitions),
-            "updated_at": utc_now_iso(),
+            "updated_at": data_parsing_service.utc_now_iso(),
         })
     )
 
     with table.batch_writer() as batch:
         for partition in partitions:
-            now = utc_now_iso()
+            now = data_parsing_service.utc_now_iso()
 
             batch.put_item(
-                Item=to_decimal({
+                Item=type_conversion_service.convert_floats_to_decimal({
                     "PK": f"RUN#{config['run_id']}",
                     "SK": f"PARTITION#{partition['partition_id']}",
 

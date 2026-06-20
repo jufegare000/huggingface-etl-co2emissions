@@ -1,4 +1,7 @@
 from application.services.date_parsing_service_implemented import SystemDateTimeServiceImplemented
+from application.services.type_conversion_service_implemented import DynamoDBTypeConversionServiceImplemented
 from domain.extract.services.date_parsing_service import DataParsingService
+from infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
+type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
