@@ -7,9 +7,9 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
+from config.raw_data_set_columns import CSV_COLUMNS
 
 import boto3
-
 
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
@@ -21,24 +21,6 @@ PREPARED_PREFIX = "prepared/hf-carbon"
 GLOBAL_RATE_LIMIT = 1000
 WINDOW_SECONDS = 300
 CALLS_PER_MODEL = 1
-
-CSV_COLUMNS = [
-    "model_id",
-    "co2_eq_emissions",
-    "co2_source",
-    "training_type",
-    "geographical_location",
-    "hardware_used",
-    "created_at",
-    "downloads",
-    "likes",
-    "library_name",
-    "pipeline_tag",
-    "tags",
-    "snapshot_id",
-    "discovered_at",
-]
-
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()

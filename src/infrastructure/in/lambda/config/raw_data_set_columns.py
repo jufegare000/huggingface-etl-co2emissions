@@ -1,0 +1,16 @@
+CSV_COLUMNS = [
+    "model_id",
+    "co2_eq_emissions",
+    "co2_source",
+    "training_type",
+    "geographical_location",
+    "hardware_used",
+    "created_at",
+    "downloads",
+    "likes",
+    "library_name",
+    "pipeline_tag",
+    "tags",
+    "snapshot_id",
+    "discovered_at",
+]

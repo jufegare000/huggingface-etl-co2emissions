@@ -4,9 +4,9 @@ module "glue_ingestion_job" {
   project_name = local.project_name
   environment  = var.environment
 
-  s3_bucket_id  = module.s3_etl_dev.bucket_id
-  glue_role_arn = module.security_base.glue_role_arn
-  script_path   = "scripts/raw_ingestion.py"
+  s3_bucket_id         = module.s3_etl_dev.bucket_id
+  glue_role_arn        = module.security_base.glue_role_arn
+  script_path          = "scripts/raw_ingestion.py"
   hf_token_secret_name = module.hf_secrets.secret_arn
 }
 

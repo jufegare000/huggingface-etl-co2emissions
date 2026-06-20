@@ -1,5 +1,5 @@
 variable "function_name" { type = string }
-variable "source_file_path" { type = string }
+variable "source_dir_path" { type = string }
 variable "handler" {
   type    = string
   default = "data_preparation_job.handler"
