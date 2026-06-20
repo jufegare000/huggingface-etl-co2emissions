@@ -8,19 +8,12 @@ from decimal import Decimal
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 from config.raw_data_set_columns import CSV_COLUMNS
+from config.data_preparation_enum import DataPreparationConfig
 
 import boto3
 
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
-
-
-DISCOVERY_DEFAULT_KEY = "discovery/hf-carbon/latest/models_with_emissions.csv"
-PREPARED_PREFIX = "prepared/hf-carbon"
-
-GLOBAL_RATE_LIMIT = 1000
-WINDOW_SECONDS = 300
-CALLS_PER_MODEL = 1
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -131,7 +124,7 @@ def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
         "run_id": run_id,
         "source_csv_path": event.get(
             "source_csv_path",
-            f"s3://{bucket_name}/{DISCOVERY_DEFAULT_KEY}",
+            f"s3://{bucket_name}/{DataPreparationConfig.DISCOVERY_DEFAULT_KEY}",
         ),
         "workers": int(event.get("workers", 4)),
         "threads_per_worker": int(event.get("threads_per_worker", 1)),
@@ -139,11 +132,11 @@ def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
         "control_table_name": table_name,
         "prepared_prefix": event.get(
             "prepared_prefix",
-            f"{PREPARED_PREFIX}/run_id={run_id}",
+            f"{DataPreparationConfig.PREPARED_PREFIX}/run_id={run_id}",
         ),
-        "global_rate_limit": int(event.get("global_rate_limit", GLOBAL_RATE_LIMIT)),
-        "window_seconds": int(event.get("window_seconds", WINDOW_SECONDS)),
-        "calls_per_model": int(event.get("calls_per_model", CALLS_PER_MODEL)),
+        "global_rate_limit": int(event.get("global_rate_limit", DataPreparationConfig.GLOBAL_RATE_LIMIT)),
+        "window_seconds": int(event.get("window_seconds", DataPreparationConfig.WINDOW_SECONDS)),
+        "calls_per_model": int(event.get("calls_per_model", DataPreparationConfig.CALLS_PER_MODEL)),
     }
 
 
