@@ -1,10 +1,10 @@
-from application.services.data_preparation.config.environment.env_variables_service_implemented import EnvironmentVariablesService
+from application.data_preparation.services.config.environment.env_variables_service_implemented import EnvironmentVariablesService
 from typing import Dict, Any
 
 from domain.data_preparation.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from domain.data_preparation.services.config.lambda_function.lambda_config_validator_service import LambdaConfigValidatorService
 from domain.data_preparation.services.date_parsing_service import DataParsingService
-from application.services.data_preparation.config.lambda_function.data_preparation_enum import DataPreparationConfigParams
+from application.data_preparation.services.config.lambda_function.data_preparation_enum import DataPreparationConfigParams
 
 
 class LambdaConfigServiceImplemented(LambdaConfigService):

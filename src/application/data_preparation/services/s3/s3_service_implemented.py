@@ -1,7 +1,7 @@
 from botocore.client import BaseClient
 from typing import List, Dict, Any
 
-from application.services.data_preparation.s3.raw_data_set_columns import CSV_COLUMNS
+from application.data_preparation.services.s3.raw_data_set_columns import CSV_COLUMNS
 from domain.data_preparation.services.s3.s3_service import S3Service
 import boto3
 import io

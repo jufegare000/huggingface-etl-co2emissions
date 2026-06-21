@@ -7,5 +7,7 @@ class DataPreparationRepository(Protocol):
             partitions: List[Dict[str, Any]],
             bucket: str,
             config: Dict[str, Any],
+            manifest: dict[str, str | int],
+            manifest_key: str
     ) -> Dict[str, Any]:
         ...

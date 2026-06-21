@@ -1,4 +1,4 @@
-from application.services.data_preparation.dates import SystemDateTimeServiceImplemented
+from application.data_preparation.services.dates.date_parsing_service_implemented import SystemDateTimeServiceImplemented
 
 def test_execute_returns_fixed_datetime():
     service = SystemDateTimeServiceImplemented()

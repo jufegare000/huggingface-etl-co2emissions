@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 import math
 
-from application.services.data_preparation.config.lambda_function.data_preparation_enum import DataPreparationConfigParams
+from application.data_preparation.services.config.lambda_function.data_preparation_enum import DataPreparationConfigParams
 from domain.data_preparation.services.config.boundaries.boundaries_calculation_service import BoundariesCalculationService
 
 class BoundariesCalculationServiceImplemented(BoundariesCalculationService):

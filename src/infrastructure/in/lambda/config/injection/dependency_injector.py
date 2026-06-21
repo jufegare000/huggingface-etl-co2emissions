@@ -1,24 +1,24 @@
-from application.services.data_preparation.config.boundaries.boundaries_calculation_service_implemented import \
+from application.data_preparation.services.config.boundaries.boundaries_calculation_service_implemented import \
     BoundariesCalculationServiceImplemented
-from application.services.data_preparation.config.lambda_function.lambda_config_service_implemented import LambdaConfigServiceImplemented
-from application.services.data_preparation.config.lambda_function.lambda_config_validator_service_implemented import \
+from application.data_preparation.services.config.lambda_function.lambda_config_service_implemented import LambdaConfigServiceImplemented
+from application.data_preparation.services.config.lambda_function.lambda_config_validator_service_implemented import \
     LambdaConfigValidatorServiceImplemented
 
-from application.services.data_preparation.config.partitions.partition_descriptor_service_implemented import \
+from application.data_preparation.services.config.partitions.partition_descriptor_service_implemented import \
     PartitionDescriptorServiceImplemented
-from application.services.data_preparation.dates.date_parsing_service_implemented import \
+from application.data_preparation.services.dates.date_parsing_service_implemented import \
     SystemDateTimeServiceImplemented
-from application.services.data_preparation.dynamodb.dynamodb_conversion_service_implemented import \
+from application.data_preparation.services.dynamodb.dynamodb_conversion_service_implemented import \
     DynamoDBTypeConversionServiceImplemented
-from application.services.data_preparation.metadata.ai_metadata_models.ai_models_metadata_parser_service_implemented import \
+from application.data_preparation.services.metadata.ai_metadata_models.ai_models_metadata_parser_service_implemented import \
     AIModelsMetadataParserServiceImplemented
-from application.services.data_preparation.metadata.ai_metadata_models.models_metadata_service_implemented import \
+from application.data_preparation.services.metadata.ai_metadata_models.models_metadata_service_implemented import \
     AIAIModelsMetadataServiceImplemented
-from application.services.data_preparation.s3.plain_text_reader_service_implemented import \
+from application.data_preparation.services.s3.plain_text_reader_service_implemented import \
     PlainTextReaderServiceImplemented
-from application.services.data_preparation.s3.s3_parser_service_implemented import S3ParserServiceImplemented
+from application.data_preparation.services.s3.s3_parser_service_implemented import S3ParserServiceImplemented
 
-from application.services.data_preparation.s3.s3_service_implemented import S3ServiceImplemented
+from application.data_preparation.services.s3.s3_service_implemented import S3ServiceImplemented
 
 from domain.data_preparation.services.config.lambda_function.lambda_config_validator_service import LambdaConfigValidatorService
 from domain.data_preparation.services.config.boundaries.boundaries_calculation_service import BoundariesCalculationService
@@ -31,7 +31,9 @@ from domain.data_preparation.services.plain_texts.plain_text_reader_service impo
 from domain.data_preparation.services.s3.s3_parser_service import S3ParserService
 from infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
 from domain.data_preparation.services.s3.s3_service import S3Service
+from domain.data_preparation.persistence.data_preparation_repository import DataPreparationRepository
 from domain.data_preparation.services.config.lambda_function.lambda_config_service import LambdaConfigService
+from infrastructure.out.dynamo_db.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
@@ -48,3 +50,4 @@ models_metadata_service: AIModelsMetadataService = AIAIModelsMetadataServiceImpl
                                                                                     ai_models_metadat_parser_service)
 boundaries_calculation_service: BoundariesCalculationService = BoundariesCalculationServiceImplemented
 partition_descriptor_service: PartitionDescriptorService = PartitionDescriptorServiceImplemented
+data_preparation_repository: DataPreparationRepository = DynamoDBDataPreparationRepository(data_parsing_service, type_conversion_service)
