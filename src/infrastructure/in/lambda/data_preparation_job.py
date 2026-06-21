@@ -1,76 +1,18 @@
-import csv
-import io
-import json
 import math
-import os
-from decimal import Decimal
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
-from config.raw_data_set_columns import CSV_COLUMNS
-from config.data_preparation_enum import DataPreparationConfig
+
+from application.services.config.lambda_function.data_preparation_enum import DataPreparationConfigParams
 from config.injection.dependency_injector import data_parsing_service
 from config.injection.dependency_injector import type_conversion_service
+from config.injection.dependency_injector import s3_uri_service
+from config.injection.dependency_injector import s3_service
+from config.injection.dependency_injector import plain_text_reader
+from config.injection.dependency_injector import lambda_config_service
 
 import boto3
 
 s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
-
-def parse_s3_uri(uri: str) -> Dict[str, str]:
-    parsed = urlparse(uri)
-
-    if parsed.scheme != "s3":
-        raise ValueError(f"Expected s3 URI, got: {uri}")
-    return {
-        "bucket": parsed.netloc,
-        "key": parsed.path.lstrip("/"),
-    }
-
-
-def read_csv_from_s3(s3_uri: str) -> List[Dict[str, Any]]:
-    parsed = parse_s3_uri(s3_uri)
-
-    response = s3.get_object(
-        Bucket=parsed["bucket"],
-        Key=parsed["key"],
-    )
-
-    text = response["Body"].read().decode("utf-8")
-    reader = csv.DictReader(io.StringIO(text))
-
-    if not reader.fieldnames:
-        raise ValueError(f"CSV has no header: {s3_uri}")
-
-    if "model_id" not in reader.fieldnames:
-        raise ValueError("CSV must contain model_id")
-
-    if "co2_eq_emissions" not in reader.fieldnames:
-        raise ValueError("CSV must contain co2_eq_emissions")
-
-    return list(reader)
-
-
-def write_csv_to_s3(rows: List[Dict[str, Any]], bucket: str, key: str) -> None:
-    buffer = io.StringIO()
-    writer = csv.DictWriter(buffer, fieldnames=CSV_COLUMNS, extrasaction="ignore")
-    writer.writeheader()
-    writer.writerows(rows)
-
-    s3.put_object(
-        Bucket=bucket,
-        Key=key,
-        Body=buffer.getvalue().encode("utf-8"),
-        ContentType="text/csv",
-    )
-
-
-def write_json_to_s3(payload: Dict[str, Any], bucket: str, key: str) -> None:
-    s3.put_object(
-        Bucket=bucket,
-        Key=key,
-        Body=json.dumps(payload, ensure_ascii=False, indent=2, default=str).encode("utf-8"),
-        ContentType="application/json",
-    )
 
 
 def safe_float(value: Any) -> Optional[float]:
@@ -93,35 +35,6 @@ def safe_int(value: Any) -> int:
         return 0
 
 
-def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
-    bucket_name = os.environ.get("RAW_BUCKET_NAME", "my-default-bucket")
-    table_name = os.environ.get("CONTROL_TABLE_NAME")
-
-    if not table_name:
-        raise ValueError("CONTROL_TABLE_NAME environment variable is required")
-
-    run_id = event.get("run_id", data_parsing_service.utc_now_compact())
-
-    return {
-        "run_id": run_id,
-        "source_csv_path": event.get(
-            "source_csv_path",
-            f"s3://{bucket_name}/{DataPreparationConfig.DISCOVERY_DEFAULT_KEY}",
-        ),
-        "workers": int(event.get("workers", 4)),
-        "threads_per_worker": int(event.get("threads_per_worker", 1)),
-        "bucket_name": bucket_name,
-        "control_table_name": table_name,
-        "prepared_prefix": event.get(
-            "prepared_prefix",
-            f"{DataPreparationConfig.PREPARED_PREFIX}/run_id={run_id}",
-        ),
-        "global_rate_limit": int(event.get("global_rate_limit", DataPreparationConfig.GLOBAL_RATE_LIMIT.value)),
-        "window_seconds": int(event.get("window_seconds", DataPreparationConfig.WINDOW_SECONDS.value)),
-        "calls_per_model": int(event.get("calls_per_model", DataPreparationConfig.CALLS_PER_MODEL.value)),
-    }
-
-
 def validate_input(config: Dict[str, Any]) -> None:
     if config["workers"] <= 0:
         raise ValueError("workers must be > 0")
@@ -141,11 +54,11 @@ def validate_input(config: Dict[str, Any]) -> None:
     if not config["source_csv_path"]:
         raise ValueError("source_csv_path is required")
 
-    parse_s3_uri(config["source_csv_path"])
+    s3_uri_service.parse_s3_uri(config["source_csv_path"])
 
 
 def load_models_metadata(config: Dict[str, Any]) -> List[Dict[str, Any]]:
-    rows = read_csv_from_s3(config["source_csv_path"])
+    rows = plain_text_reader.read_csv_from_s3(config["source_csv_path"])
 
     models_by_id: Dict[str, Dict[str, Any]] = {}
 
@@ -189,7 +102,7 @@ def calculate_percentile_boundaries(
 ) -> List[Dict[str, Any]]:
     partition_size = max(
         1,
-        math.floor(DataPreparationConfig.GLOBAL_RATE_LIMIT.value / workers / DataPreparationConfig.CALLS_PER_MODEL.value),
+        math.floor(DataPreparationConfigParams.GLOBAL_RATE_LIMIT.value / workers / DataPreparationConfigParams.CALLS_PER_MODEL.value),
     )
 
     partitions_count = math.ceil(len(models) / partition_size)
@@ -240,7 +153,7 @@ def build_partition_descriptors(
 
         input_key = f"{prepared_prefix}/partition_id={partition_id_str}/models.csv"
 
-        write_csv_to_s3(
+        s3_service.write_csv_to_s3(
             rows=partition_rows,
             bucket=bucket,
             key=input_key,
@@ -281,7 +194,7 @@ def persist_preparation_output(
         "partitions": partitions,
     }
 
-    write_json_to_s3(manifest, bucket, manifest_key)
+    s3_service.write_json_to_s3(manifest, bucket, manifest_key)
 
     table = dynamodb.Table(config["control_table_name"])
 
@@ -416,7 +329,7 @@ def build_step_function_output(
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    config = load_input_manifest(event)
+    config = lambda_config_service.load_input_manifest(event)
     validate_input(config)
 
     models = load_models_metadata(config)

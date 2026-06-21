@@ -1,7 +1,21 @@
-from application.services.date_parsing_service_implemented import SystemDateTimeServiceImplemented
-from application.services.type_conversion_service_implemented import DynamoDBTypeConversionServiceImplemented
+from application.services.config.lambda_function.lambda_config_service_implemented import LambdaConfigServiceImplemented
+from application.services.dates.date_parsing_service_implemented import SystemDateTimeServiceImplemented
+from application.services.dynamodb.dynamodb_conversion_service_implemented import DynamoDBTypeConversionServiceImplemented
+from application.services.s3.plain_text_reader_service_implemented import PlainTextReaderServiceImplemented
+from application.services.s3.s3_parser_service_implemented import S3ParserServiceImplemented
+from application.services.s3.s3_service_implemented import S3ServiceImplemented
+from domain.extract.services.config.lambda_config_service import LambdaConfigService
 from domain.extract.services.date_parsing_service import DataParsingService
+from domain.extract.services.plain_texts.plain_text_reader_service import PlainTextReaderService
+from domain.extract.services.s3.s3_parser_service import S3ParserService
 from infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
+from domain.extract.services.s3.s3_service import S3Service
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
+s3_uri_service: S3ParserService = S3ParserServiceImplemented
+s3_service: S3Service = S3ServiceImplemented
+
+lambda_config_service: LambdaConfigService = LambdaConfigServiceImplemented(data_parsing_service)
+
+plain_text_reader:PlainTextReaderService = PlainTextReaderServiceImplemented(s3_uri_service, s3_service)
