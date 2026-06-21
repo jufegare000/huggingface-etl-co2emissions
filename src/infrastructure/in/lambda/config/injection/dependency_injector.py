@@ -37,17 +37,17 @@ from infrastructure.out.dynamo_db.dynamo_db_data_preparation_repository import D
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
-s3_uri_service: S3ParserService = S3ParserServiceImplemented
-s3_service: S3Service = S3ServiceImplemented
+s3_uri_service: S3ParserService = S3ParserServiceImplemented()
+s3_service: S3Service = S3ServiceImplemented()
 
 lambda_config_validation_service: LambdaConfigValidatorService = LambdaConfigValidatorServiceImplemented(s3_uri_service)
 lambda_config_service: LambdaConfigService = LambdaConfigServiceImplemented(data_parsing_service,
                                                                             lambda_config_validation_service)
 
 plain_text_reader: PlainTextReaderService = PlainTextReaderServiceImplemented(s3_uri_service, s3_service)
-ai_models_metadat_parser_service: AIModelsMetadataParserService = AIModelsMetadataParserServiceImplemented
+ai_models_metadat_parser_service: AIModelsMetadataParserService = AIModelsMetadataParserServiceImplemented()
 models_metadata_service: AIModelsMetadataService = AIAIModelsMetadataServiceImplemented(plain_text_reader,
                                                                                     ai_models_metadat_parser_service)
-boundaries_calculation_service: BoundariesCalculationService = BoundariesCalculationServiceImplemented
-partition_descriptor_service: PartitionDescriptorService = PartitionDescriptorServiceImplemented
+boundaries_calculation_service: BoundariesCalculationService = BoundariesCalculationServiceImplemented()
+partition_descriptor_service: PartitionDescriptorService = PartitionDescriptorServiceImplemented(s3_service)
 data_preparation_repository: DataPreparationRepository = DynamoDBDataPreparationRepository(data_parsing_service, type_conversion_service)

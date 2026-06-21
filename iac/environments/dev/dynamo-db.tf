@@ -16,7 +16,7 @@ module "dynamodb_enrichment_control" {
     local.tags,
     {
       Component = "enrichment-control"
-      Service   = "dynamodb"
+      Service   = "dynamo_db"
     }
   )
 }

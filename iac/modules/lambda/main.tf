@@ -10,11 +10,11 @@ resource "aws_lambda_function" "this" {
   function_name = var.function_name
   role          = var.lambda_role_arn
   handler       = var.handler
-  runtime       = "python3.11"
+  runtime       = var.runtime
+  timeout       = var.timeout
   kms_key_arn   = var.kms_key_arn
   environment {
     variables = var.environment_variables
   }
-
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 }

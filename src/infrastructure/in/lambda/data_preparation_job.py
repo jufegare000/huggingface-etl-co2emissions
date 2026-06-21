@@ -1,4 +1,6 @@
-from typing import Any, Dict, List
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 from config.injection.dependency_injector import data_parsing_service
 from config.injection.dependency_injector import s3_service
