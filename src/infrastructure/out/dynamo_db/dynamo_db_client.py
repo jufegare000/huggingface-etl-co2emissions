@@ -3,7 +3,7 @@ import boto3
 
 class DynamoDBClient:
     _instance = None
-    dynamodb_client = boto3.resource("dynamo_db")
+    dynamodb_client = boto3.resource("dynamodb")
 
     def __new__(cls):
         if cls._instance is None:
