@@ -12,12 +12,16 @@ import boto3
 
 dynamodb = boto3.resource("dynamodb")
 
-type FinalManifest = dict[str, any]
+type FinalManifest = Dict[str, Any]
+from typing import Any, TypedDict
 
-def build_manifest(partitions: List[Dict[str, Any]],
-                   bucket: str,
-                   config: Dict[str, Any],
-                   ) -> (dict[str, str | int], str):
+from typing import Any, Dict, List, Tuple
+
+def build_manifest(
+    partitions: List[Dict[str, Any]],
+    bucket: str,
+    config: Dict[str, Any],
+) -> Tuple[Dict[str, Any], str]:
     manifest_key = f"{config['prepared_prefix'].strip('/')}/manifest.json"
     manifest = {
         "run_id": config["run_id"],
