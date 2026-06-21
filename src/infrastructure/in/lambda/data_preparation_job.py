@@ -1,95 +1,102 @@
-import json
+import sys
 import os
-from typing import Any, Dict, List
+sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
+from config.injection.dependency_injector import data_parsing_service
+from config.injection.dependency_injector import s3_service
+from config.injection.dependency_injector import lambda_config_service
+from config.injection.dependency_injector import models_metadata_service
+from config.injection.dependency_injector import boundaries_calculation_service
+from config.injection.dependency_injector import partition_descriptor_service
+from config.injection.dependency_injector import data_preparation_repository
 
-def load_input_manifest(event: Dict[str, Any]) -> Dict[str, Any]:
-    bucket_name = os.environ.get("RAW_BUCKET_NAME", "my-default-bucket")
+import boto3
 
-    return {
-        "source_csv_path": event.get("source_csv_path", f"s3://{bucket_name}/input/models.csv"),
-        "workers": event.get("workers", 4),
-        "threads_per_worker": event.get("threads_per_worker", 8),
-        "bucket_name": bucket_name
-    }
+dynamodb = boto3.resource("dynamodb")
 
+type FinalManifest = Dict[str, Any]
+from typing import Any, TypedDict
 
-def validate_input(config: Dict[str, Any]) -> None:
-    if config["workers"] <= 0:
-        raise ValueError("workers must be > 0")
-    if config["threads_per_worker"] <= 0:
-        raise ValueError("threads_per_worker must be > 0")
-    if not config["source_csv_path"]:
-        raise ValueError("source_csv_path is required")
+from typing import Any, Dict, List, Tuple
 
-
-def load_models_metadata(config: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return [
-        {"model_id": "org/model-a", "co2_eq_emissions": 10.5},
-        {"model_id": "org/model-b", "co2_eq_emissions": 25.0},
-        {"model_id": "org/model-c", "co2_eq_emissions": 40.2},
-        {"model_id": "org/model-d", "co2_eq_emissions": 60.8},
-    ]
-
-
-def calculate_percentile_boundaries(
-        models: List[Dict[str, Any]],
-        workers: int,
-) -> List[Dict[str, float]]:
-    return [
-        {"partition_id": i, "emission_min": i * 10.0, "emission_max": (i + 1) * 10.0}
-        for i in range(workers)
-    ]
-
-
-def build_partition_descriptors(
-        boundaries: List[Dict[str, float]],
-        config: Dict[str, Any],
-) -> List[Dict[str, Any]]:
-    partitions = []
-    bucket = config["bucket_name"]
-
-    for boundary in boundaries:
-        partition_id = boundary["partition_id"]
-        partitions.append({
-            "partition_id": partition_id,
-            "input_path": f"s3://{bucket}/prepared/partition_id={partition_id}/models.csv",
-            "thread_count": config["threads_per_worker"],
-            "emission_min": boundary["emission_min"],
-            "emission_max": boundary["emission_max"],
-            "status": "PENDING",
-        })
-    return partitions
-
-
-def persist_preparation_output(partitions: List[Dict[str, Any]], bucket: str) -> Dict[str, Any]:
-    return {
-        "manifest_path": f"s3://{bucket}/prepared/manifest.json",
+def build_manifest(
+    partitions: List[Dict[str, Any]],
+    bucket: str,
+    config: Dict[str, Any],
+) -> Tuple[Dict[str, Any], str]:
+    manifest_key = f"{config['prepared_prefix'].strip('/')}/manifest.json"
+    manifest = {
+        "run_id": config["run_id"],
+        "status": "PREPARED",
+        "source_csv_path": config["source_csv_path"],
+        "manifest_path": f"s3://{bucket}/{manifest_key}",
         "partitions_count": len(partitions),
+        "workers": config["workers"],
+        "threads_per_worker": config["threads_per_worker"],
+        "global_rate_limit": config["global_rate_limit"],
+        "window_seconds": config["window_seconds"],
+        "calls_per_model": config["calls_per_model"],
+        "created_at": data_parsing_service.utc_now_iso(),
+        "partitions": partitions,
     }
+    return manifest, manifest_key
+
+
+def persist_preparation_output(
+        partitions: List[Dict[str, Any]],
+        bucket: str,
+        config: Dict[str, Any],
+) -> Dict[str, Any]:
+    manifest, manifest_key = build_manifest(partitions, bucket, config)
+
+    s3_service.write_json_to_s3(manifest, bucket, manifest_key)
+
+    persistence_structure: Dict[str, Any] = data_preparation_repository.persist_preparation_output(partitions, bucket,
+                                                                                                   config, manifest,
+                                                                                                   manifest_key)
+
+    return persistence_structure
+
 
 def build_step_function_output(
         partitions: List[Dict[str, Any]],
         persistence_result: Dict[str, Any],
         bucket_name: str,
+        config: Dict[str, Any],
 ) -> Dict[str, Any]:
     return {
+        "run_id": config["run_id"],
         "bucket_name": bucket_name,
+        "control_table_name": config["control_table_name"],
+        "source_csv_path": config["source_csv_path"],
         "manifest_path": persistence_result["manifest_path"],
         "partitions_count": persistence_result["partitions_count"],
         "partitions": partitions,
     }
-def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    config = load_input_manifest(event)
-    validate_input(config)
 
-    models = load_models_metadata(config)
-    boundaries = calculate_percentile_boundaries(models, config["workers"])
-    partitions = build_partition_descriptors(boundaries, config)
-    persistence_result = persist_preparation_output(partitions, config["bucket_name"])
+
+def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    manifest = lambda_config_service.load_input_manifest(event)
+
+    ai_models_metadata = models_metadata_service.load_models_metadata(manifest)
+
+    boundaries = boundaries_calculation_service.calculate_percentile_boundaries(ai_models_metadata, manifest["workers"])
+
+    partitions_descriptor = partition_descriptor_service.build_partition_descriptors(
+        boundaries,
+        manifest,
+        ai_models_metadata,
+    )
+
+    persistence_result = persist_preparation_output(
+        partitions_descriptor,
+        manifest["bucket_name"],
+        manifest,
+    )
 
     return build_step_function_output(
-        partitions,
+        partitions_descriptor,
         persistence_result,
-        config["bucket_name"],
+        manifest["bucket_name"],
+        manifest,
     )

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-from domain.extract.extract_raw_model import extract_raw_model_row
+from domain.data_preparation.extract_raw_model import extract_raw_model_row
 from infrastructure.hf_client import build_hf_api
 from infrastructure.io.s3_writer import write_parquet_dataset
 from infrastructure.secrets import get_hf_token
@@ -36,7 +36,7 @@ def run_raw_ingestion(config) -> None:
     df = pd.DataFrame(rows)
 
     if df.empty:
-        logger.warning("No models with CO2 emissions were found")
+        logger.warning("No ai_metadata_models with CO2 emissions were found")
     else:
         logger.info("Extracted %s raw rows", len(df))
 
