@@ -37,3 +37,11 @@ variable "lambda_role_name" {
 variable "lambda_env_kms_key_arn" {
   type = string
 }
+
+variable "dynamodb_control_table_arn" {
+  type = string
+}
+
+variable "enrichment_glue_job_arn" {
+  type = string
+}
