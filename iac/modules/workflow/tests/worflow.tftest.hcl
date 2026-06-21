@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 variables {
-  project_name  = "hf-etl"
+  project_name  = var.project_name
   environment   = "test"
   sfn_role_arn  = "arn:aws:iam::123456789012:role/test-sfn-role"
   lambda_arn    = "arn:aws:lambda:us-east-1:123456789012:function:test-lambda"

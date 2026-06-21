@@ -1,0 +1,332 @@
+.
+├── CLAUDE.md
+├── ETL.png
+├── iac
+│   ├── environments
+│   │   └── dev
+│   │       ├── data.tf
+│   │       ├── dynamo-db.tf
+│   │       ├── glue_consolidation.tf
+│   │       ├── glue_discovery.tf
+│   │       ├── glue.tf
+│   │       ├── kms.tf
+│   │       ├── lambda.tf
+│   │       ├── locals.tf
+│   │       ├── main.tf
+│   │       ├── outputs.tf
+│   │       ├── providers.tf
+│   │       ├── s3.tf
+│   │       ├── secrets.tf
+│   │       ├── security_base.tf
+│   │       ├── security_policies.tf
+│   │       ├── terraform.tfstate
+│   │       ├── terraform.tfstate.backup
+│   │       ├── tfplan
+│   │       ├── variables.tf
+│   │       └── workflow.tf
+│   └── modules
+│       ├── dynamo-db
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   └── variables.tf
+│       ├── glue-discovery
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   └── variables.tf
+│       ├── glue_enrichment
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   └── variables.tf
+│       ├── glue-job
+│       │   ├── main.tf
+│       │   ├── tests
+│       │   │   └── glue.tftest.hcl
+│       │   └── variables.tf
+│       ├── kms
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   ├── tests
+│       │   │   └── kms.tftest.hcl
+│       │   └── variables.tf
+│       ├── lambda
+│       │   ├── files
+│       │   │   └── lambda_function.zip
+│       │   ├── main.tf
+│       │   ├── tests
+│       │   │   └── lambda.tftest.hcl
+│       │   └── variables.tf
+│       ├── s3_etl
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   ├── policies.tf
+│       │   ├── tests
+│       │   │   └── bucket.tftest.hcl
+│       │   ├── variables.tf
+│       │   └── versions.tf
+│       ├── secrets
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   └── variables.tf
+│       ├── security_base
+│       │   ├── main.tf
+│       │   ├── outputs.tf
+│       │   └── variables.tf
+│       ├── security_policies
+│       │   ├── main.tf
+│       │   └── variables.tf
+│       └── workflow
+│           ├── main.tf
+│           ├── tests
+│           │   └── worflow.tftest.hcl
+│           └── variables.tf
+├── Makefile
+├── makefiles
+│   ├── deploys.mk
+│   └── tests.mk
+├── models.csv
+├── prompts
+│   ├── 001.lambda-refactor.md
+│   ├── 002.lambda-fix-packaging.md
+│   ├── 003.lambda-packaging-verification.md
+│   └── 004.lambda-first-exetuion-instruction.md
+├── pyproject.toml
+├── README.md
+├── replace.sh
+├── requirements-dev.txt
+├── requirements.txt
+├── src
+│   ├── application
+│   │   ├── data_preparation
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   └── __init__.cpython-313.pyc
+│   │   │   └── services
+│   │   │       ├── config
+│   │   │       │   ├── boundaries
+│   │   │       │   │   ├── boundaries_calculation_service_implemented.py
+│   │   │       │   │   └── __init__.py
+│   │   │       │   ├── environment
+│   │   │       │   │   ├── env_variables_service_implemented.py
+│   │   │       │   │   └── __init__.py
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── lambda_function
+│   │   │       │   │   ├── data_preparation_enum.py
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   ├── lambda_config_service_implemented.py
+│   │   │       │   │   └── lambda_config_validator_service_implemented.py
+│   │   │       │   ├── manifests
+│   │   │       │   │   ├── data_manifest_builder_service_implemented.py
+│   │   │       │   │   └── __init__.py
+│   │   │       │   └── partitions
+│   │   │       │       ├── __init__.py
+│   │   │       │       └── partition_descriptor_service_implemented.py
+│   │   │       ├── data_preparation_persistenceImplemented.py
+│   │   │       ├── dates
+│   │   │       │   ├── date_parsing_service_implemented.py
+│   │   │       │   ├── __init__.py
+│   │   │       │   └── __pycache__
+│   │   │       │       ├── date_parsing_service_implemented.cpython-313.pyc
+│   │   │       │       └── __init__.cpython-313.pyc
+│   │   │       ├── dynamodb
+│   │   │       │   ├── dynamodb_conversion_service_implemented.py
+│   │   │       │   ├── __init__.py
+│   │   │       │   └── __pycache__
+│   │   │       │       ├── dynamodb_conversion_service_implemented.cpython-313.pyc
+│   │   │       │       └── __init__.cpython-313.pyc
+│   │   │       ├── __init__.py
+│   │   │       ├── metadata
+│   │   │       │   ├── ai_metadata_models
+│   │   │       │   │   ├── ai_models_metadata_parser_service_implemented.py
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   └── models_metadata_service_implemented.py
+│   │   │       │   ├── __init__.py
+│   │   │       │   └── plain_texts
+│   │   │       │       └── __init__.py
+│   │   │       ├── __pycache__
+│   │   │       │   └── __init__.cpython-313.pyc
+│   │   │       └── s3
+│   │   │           ├── __init__.py
+│   │   │           ├── plain_text_reader_service_implemented.py
+│   │   │           ├── raw_data_set_columns.py
+│   │   │           ├── s3_parser_service_implemented.py
+│   │   │           └── s3_service_implemented.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── __init__.cpython-311.pyc
+│   │       └── __init__.cpython-313.pyc
+│   ├── domain
+│   │   ├── data_preparation
+│   │   │   ├── __init__.py
+│   │   │   ├── models
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── s3
+│   │   │   │       ├── bucket_uri.py
+│   │   │   │       └── __init__.py
+│   │   │   ├── persistence
+│   │   │   │   ├── data_preparation_repository.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   └── __init__.cpython-313.pyc
+│   │   │   └── services
+│   │   │       ├── config
+│   │   │       │   ├── boundaries
+│   │   │       │   │   ├── boundaries_calculation_service.py
+│   │   │       │   │   └── __init__.py
+│   │   │       │   ├── environment
+│   │   │       │   │   ├── env_variables_service.py
+│   │   │       │   │   └── __init__.py
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── lambda_function
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   ├── lambda_config_service.py
+│   │   │       │   │   └── lambda_config_validator_service.py
+│   │   │       │   ├── manifests
+│   │   │       │   │   ├── data_manifest_builder_service.py
+│   │   │       │   │   └── __init__.py
+│   │   │       │   └── partitions
+│   │   │       │       ├── __init__.py
+│   │   │       │       └── partition_descriptor_service.py
+│   │   │       ├── data_preparation
+│   │   │       │   ├── data_preparation_persistence.py
+│   │   │       │   └── __init__.py
+│   │   │       ├── date_parsing_service.py
+│   │   │       ├── __init__.py
+│   │   │       ├── metadata
+│   │   │       │   ├── ai_metadata_models
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   ├── models_metadata_parser_service.py
+│   │   │       │   │   └── models_metadata_service.py
+│   │   │       │   └── __init__.py
+│   │   │       ├── plain_texts
+│   │   │       │   ├── __init__.py
+│   │   │       │   └── plain_text_reader_service.py
+│   │   │       ├── __pycache__
+│   │   │       │   ├── date_parsing_service.cpython-311.pyc
+│   │   │       │   ├── date_parsing_service.cpython-313.pyc
+│   │   │       │   ├── __init__.cpython-311.pyc
+│   │   │       │   └── __init__.cpython-313.pyc
+│   │   │       └── s3
+│   │   │           ├── __init__.py
+│   │   │           ├── s3_parser_service.py
+│   │   │           └── s3_service.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   │       ├── __init__.cpython-311.pyc
+│   │       └── __init__.cpython-313.pyc
+│   ├── hf_co2_pipeline.egg-info
+│   │   ├── dependency_links.txt
+│   │   ├── PKG-INFO
+│   │   ├── requires.txt
+│   │   ├── SOURCES.txt
+│   │   └── top_level.txt
+│   ├── infrastructure
+│   │   ├── in
+│   │   │   ├── glue
+│   │   │   │   ├── discovery.py
+│   │   │   │   ├── gold_consolidation.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   └── __init__.cpython-311.pyc
+│   │   │   │   └── raw_ingestion.py
+│   │   │   ├── __init__.py
+│   │   │   ├── lambda
+│   │   │   │   ├── config
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── injection
+│   │   │   │   │   │   ├── dependency_injector.py
+│   │   │   │   │   │   └── __init__.py
+│   │   │   │   │   ├── __pycache__
+│   │   │   │   │   │   └── __init__.cpython-311.pyc
+│   │   │   │   │   └── raw_data_set_columns.py
+│   │   │   │   ├── data_preparation_job.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__
+│   │   │   │       └── __init__.cpython-311.pyc
+│   │   │   └── __pycache__
+│   │   │       └── __init__.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   ├── out
+│   │   │   ├── dynamo
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── parsing_utils
+│   │   │   │   │   ├── dynamo_value.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── __pycache__
+│   │   │   │   │       ├── dynamo_value.cpython-311.pyc
+│   │   │   │   │       ├── dynamo_value.cpython-313.pyc
+│   │   │   │   │       ├── __init__.cpython-311.pyc
+│   │   │   │   │       └── __init__.cpython-313.pyc
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   │   └── __init__.cpython-313.pyc
+│   │   │   │   └── services
+│   │   │   │       ├── __init__.py
+│   │   │   │       ├── __pycache__
+│   │   │   │       │   ├── __init__.cpython-311.pyc
+│   │   │   │       │   ├── __init__.cpython-313.pyc
+│   │   │   │       │   ├── type_conversion_service.cpython-311.pyc
+│   │   │   │       │   └── type_conversion_service.cpython-313.pyc
+│   │   │   │       └── type_conversion_service.py
+│   │   │   ├── dynamo_db
+│   │   │   │   ├── dynamo_db_client.py
+│   │   │   │   ├── dynamo_db_data_preparation_repository.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── hugging_face
+│   │   │   │   ├── hf_client.py
+│   │   │   │   └── __pycache__
+│   │   │   │       └── hf_client.cpython-311.pyc
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   │   └── __init__.cpython-313.pyc
+│   │   │   ├── s3
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── s3_client.py
+│   │   │   │   ├── s3_writter.py
+│   │   │   │   └── services
+│   │   │   │       └── __init__.py
+│   │   │   └── secrets_config
+│   │   │       ├── hf_token_config.py
+│   │   │       ├── __init__.py
+│   │   │       └── __pycache__
+│   │   │           ├── hf_token_config.cpython-311.pyc
+│   │   │           └── __init__.cpython-311.pyc
+│   │   └── __pycache__
+│   │       ├── __init__.cpython-311.pyc
+│   │       └── __init__.cpython-313.pyc
+│   ├── __init__.py
+│   └── __pycache__
+│       └── __init__.cpython-311.pyc
+├── structure
+├── tests
+│   ├── application
+│   │   ├── raw_ingestion.py
+│   │   └── services
+│   │       ├── date_parsing_service_implemented_test.py
+│   │       ├── __pycache__
+│   │       │   ├── date_parsing_service_implemented_test.cpython-311-pytest-8.4.2.pyc
+│   │       │   ├── date_parsing_service_implemented_test.cpython-311-pytest-9.1.1.pyc
+│   │       │   ├── date_parsing_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │       │   ├── type_consersion_service_implemented_test.cpython-311-pytest-8.4.2.pyc
+│   │       │   └── type_consersion_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │       └── type_consersion_service_implemented_test.py
+│   └── infrastructure
+│       ├── in
+│       │   └── glue
+│       │       ├── config.py
+│       │       ├── glue_args.py
+│       │       ├── __init__.py
+│       │       └── main.py
+│       └── out
+│           ├── hugging_face
+│           │   └── __pycache__
+│           │       ├── test_hf_client_integration.cpython-311-pytest-8.4.2.pyc
+│           │       ├── test_percentile_extraction.cpython-311-pytest-8.4.2.pyc
+│           │       └── test_percentile_extraction.cpython-313-pytest-8.4.2.pyc
+│           └── s3
+│               ├── s3_client.py
+│               └── s3_writter.py
+└── Untitled.ipynb
+
+104 directories, 226 files
