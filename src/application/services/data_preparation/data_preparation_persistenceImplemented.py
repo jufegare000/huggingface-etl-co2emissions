@@ -149,6 +149,3 @@ class DataPreparationPersistenceImplemented(DataPreparationPersistence):
             "manifest_path": manifest["manifest_path"],
             "partitions_count": len(partitions),
         }
-
-
-from typing import Any, Dict, List, Protocol

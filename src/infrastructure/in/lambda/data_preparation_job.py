@@ -16,7 +16,7 @@ dynamodb = boto3.resource("dynamodb")
 def build_manifest(partitions: List[Dict[str, Any]],
                    bucket: str,
                    config: Dict[str, Any],
-                   ):
+                   )-> (dict[str, str | int], str):
     manifest_key = f"{config['prepared_prefix'].strip('/')}/manifest.json"
     manifest = {
         "run_id": config["run_id"],
@@ -179,14 +179,14 @@ def build_step_function_output(
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     manifest = lambda_config_service.load_input_manifest(event)
 
-    models = models_metadata_service.load_models_metadata(manifest)
+    ai_models_metadata = models_metadata_service.load_models_metadata(manifest)
 
-    boundaries = boundaries_calculation_service.calculate_percentile_boundaries(models, manifest["workers"])
+    boundaries = boundaries_calculation_service.calculate_percentile_boundaries(ai_models_metadata, manifest["workers"])
 
     partitions_descriptor = partition_descriptor_service.build_partition_descriptors(
         boundaries,
         manifest,
-        models,
+        ai_models_metadata,
     )
 
     persistence_result = persist_preparation_output(

@@ -2,11 +2,11 @@ from typing import Any, Dict, List
 
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
-from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_service import ModelsMetadataService
+from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
 from domain.data_preparation.services.plain_texts.plain_text_reader_service import PlainTextReaderService
 
 
-class ModelsMetadataServiceImplemented(ModelsMetadataService):
+class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
 
     def __init__(self, plain_text_reader: PlainTextReaderService,
                  ai_models_metadata_parser_service: AIModelsMetadataParserService):
