@@ -1,184 +1,23 @@
-import math
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from application.services.config.lambda_function.data_preparation_enum import DataPreparationConfigParams
 from config.injection.dependency_injector import data_parsing_service
 from config.injection.dependency_injector import type_conversion_service
-from config.injection.dependency_injector import s3_uri_service
 from config.injection.dependency_injector import s3_service
-from config.injection.dependency_injector import plain_text_reader
 from config.injection.dependency_injector import lambda_config_service
+from config.injection.dependency_injector import models_metadata_service
+from config.injection.dependency_injector import boundaries_calculation_service
+from config.injection.dependency_injector import partition_descriptor_service
 
 import boto3
 
-s3 = boto3.client("s3")
 dynamodb = boto3.resource("dynamodb")
 
 
-def safe_float(value: Any) -> Optional[float]:
-    if value is None:
-        return None
-
-    try:
-        return float(str(value).strip())
-    except ValueError:
-        return None
-
-
-def safe_int(value: Any) -> int:
-    if value is None:
-        return 0
-
-    try:
-        return int(float(str(value).strip()))
-    except ValueError:
-        return 0
-
-
-def validate_input(config: Dict[str, Any]) -> None:
-    if config["workers"] <= 0:
-        raise ValueError("workers must be > 0")
-
-    if config["threads_per_worker"] <= 0:
-        raise ValueError("threads_per_worker must be > 0")
-
-    if config["global_rate_limit"] <= 0:
-        raise ValueError("global_rate_limit must be > 0")
-
-    if config["window_seconds"] <= 0:
-        raise ValueError("window_seconds must be > 0")
-
-    if config["calls_per_model"] <= 0:
-        raise ValueError("calls_per_model must be > 0")
-
-    if not config["source_csv_path"]:
-        raise ValueError("source_csv_path is required")
-
-    s3_uri_service.parse_s3_uri(config["source_csv_path"])
-
-
-def load_models_metadata(config: Dict[str, Any]) -> List[Dict[str, Any]]:
-    rows = plain_text_reader.read_csv_from_s3(config["source_csv_path"])
-
-    models_by_id: Dict[str, Dict[str, Any]] = {}
-
-    for row in rows:
-        model_id = str(row.get("model_id") or "").strip()
-        emissions = safe_float(row.get("co2_eq_emissions"))
-
-        if not model_id:
-            continue
-
-        if emissions is None:
-            continue
-
-        row["model_id"] = model_id
-        row["co2_eq_emissions"] = emissions
-        row["downloads"] = safe_int(row.get("downloads"))
-        row["likes"] = safe_int(row.get("likes"))
-
-        models_by_id[model_id] = row
-
-    models = list(models_by_id.values())
-
-    models.sort(
-        key=lambda item: (
-            item.get("downloads", 0),
-            item.get("likes", 0),
-            item.get("co2_eq_emissions", 0),
-        ),
-        reverse=True,
-    )
-
-    if not models:
-        raise ValueError("No valid models found in source CSV")
-
-    return models
-
-
-def calculate_percentile_boundaries(
-        models: List[Dict[str, Any]],
-        workers: int,
-) -> List[Dict[str, Any]]:
-    partition_size = max(
-        1,
-        math.floor(DataPreparationConfigParams.GLOBAL_RATE_LIMIT.value / workers / DataPreparationConfigParams.CALLS_PER_MODEL.value),
-    )
-
-    partitions_count = math.ceil(len(models) / partition_size)
-
-    boundaries = []
-
-    for i in range(partitions_count):
-        start_index = i * partition_size
-        end_index = min(start_index + partition_size, len(models))
-
-        partition_models = models[start_index:end_index]
-
-        emissions = [
-            float(model["co2_eq_emissions"])
-            for model in partition_models
-            if model.get("co2_eq_emissions") is not None
-        ]
-
-        boundaries.append({
-            "partition_id": i,
-            "start_index": start_index,
-            "end_index": end_index,
-            "records_count": len(partition_models),
-            "emission_min": min(emissions) if emissions else None,
-            "emission_max": max(emissions) if emissions else None,
-        })
-
-    return boundaries
-
-
-def build_partition_descriptors(
-        boundaries: List[Dict[str, Any]],
-        config: Dict[str, Any],
-        models: List[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    partitions = []
-    bucket = config["bucket_name"]
-    prepared_prefix = config["prepared_prefix"].strip("/")
-
-    for boundary in boundaries:
-        partition_id = boundary["partition_id"]
-        partition_id_str = f"{partition_id:06d}"
-
-        start_index = boundary["start_index"]
-        end_index = boundary["end_index"]
-
-        partition_rows = models[start_index:end_index]
-
-        input_key = f"{prepared_prefix}/partition_id={partition_id_str}/models.csv"
-
-        s3_service.write_csv_to_s3(
-            rows=partition_rows,
-            bucket=bucket,
-            key=input_key,
-        )
-
-        partitions.append({
-            "partition_id": partition_id_str,
-            "input_path": f"s3://{bucket}/{input_key}",
-            "thread_count": config["threads_per_worker"],
-            "records_count": boundary["records_count"],
-            "emission_min": boundary["emission_min"],
-            "emission_max": boundary["emission_max"],
-            "status": "PENDING",
-        })
-
-    return partitions
-
-
-def persist_preparation_output(
-        partitions: List[Dict[str, Any]],
-        bucket: str,
-        config: Dict[str, Any],
-) -> Dict[str, Any]:
+def build_manifest(partitions: List[Dict[str, Any]],
+                   bucket: str,
+                   config: Dict[str, Any],
+                   ):
     manifest_key = f"{config['prepared_prefix'].strip('/')}/manifest.json"
-
     manifest = {
         "run_id": config["run_id"],
         "status": "PREPARED",
@@ -193,6 +32,15 @@ def persist_preparation_output(
         "created_at": data_parsing_service.utc_now_iso(),
         "partitions": partitions,
     }
+    return manifest, manifest_key
+
+
+def persist_preparation_output(
+        partitions: List[Dict[str, Any]],
+        bucket: str,
+        config: Dict[str, Any],
+) -> Dict[str, Any]:
+    manifest, manifest_key = build_manifest(partitions, bucket, config)
 
     s3_service.write_json_to_s3(manifest, bucket, manifest_key)
 
@@ -329,27 +177,27 @@ def build_step_function_output(
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    config = lambda_config_service.load_input_manifest(event)
-    validate_input(config)
+    manifest = lambda_config_service.load_input_manifest(event)
 
-    models = load_models_metadata(config)
-    boundaries = calculate_percentile_boundaries(models, config["workers"])
+    models = models_metadata_service.load_models_metadata(manifest)
 
-    partitions = build_partition_descriptors(
+    boundaries = boundaries_calculation_service.calculate_percentile_boundaries(models, manifest["workers"])
+
+    partitions_descriptor = partition_descriptor_service.build_partition_descriptors(
         boundaries,
-        config,
+        manifest,
         models,
     )
 
     persistence_result = persist_preparation_output(
-        partitions,
-        config["bucket_name"],
-        config,
+        partitions_descriptor,
+        manifest["bucket_name"],
+        manifest,
     )
 
     return build_step_function_output(
-        partitions,
+        partitions_descriptor,
         persistence_result,
-        config["bucket_name"],
-        config,
+        manifest["bucket_name"],
+        manifest,
     )

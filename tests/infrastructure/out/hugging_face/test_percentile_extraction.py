@@ -6,7 +6,7 @@ from pathlib import Path
 
 def test_percentile_extraction():
 
-    df = pd.read_csv(Path(__file__).resolve().parents[4] / "models.csv")
+    df = pd.read_csv(Path(__file__).resolve().parents[4] / "ai_metadata_models.csv")
 
     k = 8
     percentiles = np.linspace(0, 1, k + 1)
