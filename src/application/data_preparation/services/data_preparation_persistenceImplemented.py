@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 from domain.data_preparation.services.date_parsing_service import DataParsingService
 from domain.data_preparation.services.s3.s3_service import S3Service
 
-
+# TODO: This class is outdated and unused, It can be removed?
 class DataPreparationPersistenceImplemented(DataPreparationPersistence):
 
     def __init__(self, data_parsing_service: DataParsingService, s3_service: S3Service):

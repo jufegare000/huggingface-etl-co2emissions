@@ -3,10 +3,11 @@ from typing import List
 
 from domain.data_preparation.models.preparation.manifest_status import ManifestStatus
 from domain.data_preparation.models.preparation.partition_descriptor import PartitionDescriptor
+from domain.shared.models.serializable_model import SerializableModel
 
 
 @dataclass
-class FinalManifest:
+class FinalManifest(SerializableModel):
     run_id: str
     status: ManifestStatus
     source_csv_path: str
