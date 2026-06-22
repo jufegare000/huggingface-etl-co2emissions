@@ -1,6 +1,8 @@
 from typing import Protocol, Any
 
+from domain.data_preparation.models.data.input_manifest import InputManifest
+
 
 class LambdaConfigValidatorService(Protocol):
-    def validate_input(self, config: dict[str, Any]) -> None:
+    def validate_input(self, config: InputManifest) -> None:
         ...

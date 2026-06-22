@@ -1,5 +1,7 @@
 from application.data_preparation.services.config.environment.env_variables_service_implemented import EnvironmentVariablesService
 from typing import Any
+
+from domain.data_preparation.models.data.input_manifest import InputManifest
 from domain.data_preparation.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from domain.data_preparation.services.config.lambda_function.lambda_config_validator_service import LambdaConfigValidatorService
 from domain.data_preparation.services.date_parsing_service import DataParsingService
@@ -12,18 +14,18 @@ class LambdaConfigServiceImplemented(LambdaConfigService):
         self.data_parsing_service = data_parsing_service
         self.lambda_config_validator = lambda_config_validator
 
-    def load_input_manifest(self, event: dict[str, Any]) -> dict[str, Any]:
+    def load_input_manifest(self, event: dict[str, Any]) -> InputManifest:
         manifest = self.create_manifest_structure(event)
         self.lambda_config_validator.validate_input(manifest)
         return manifest
 
-    def create_manifest_structure(self, event: dict[str, Any]):
+    def create_manifest_structure(self, event: dict[str, Any]) -> InputManifest:
         bucket_name = env_service.load_env_variable("RAW_BUCKET_NAME")
         table_name = env_service.load_env_variable("CONTROL_TABLE_NAME")
         if not table_name:
             raise ValueError("CONTROL_TABLE_NAME environment variable is required")
         run_id = event.get("run_id", self.data_parsing_service.utc_now_compact())
-        return {
+        return InputManifest({
             "run_id": run_id,
             "source_csv_path": event.get(
                 "source_csv_path",
@@ -41,4 +43,4 @@ class LambdaConfigServiceImplemented(LambdaConfigService):
                 event.get("global_rate_limit", DataPreparationConfigParams.GLOBAL_RATE_LIMIT.value)),
             "window_seconds": int(event.get("window_seconds", DataPreparationConfigParams.WINDOW_SECONDS.value)),
             "calls_per_model": int(event.get("calls_per_model", DataPreparationConfigParams.CALLS_PER_MODEL.value)),
-        }
+        })
