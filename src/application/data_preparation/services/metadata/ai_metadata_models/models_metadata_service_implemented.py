@@ -1,5 +1,5 @@
-from typing import Any
-
+from domain.data_preparation.models.data.input_manifest import InputManifest
+from domain.data_preparation.models.data.model_metadata import ModelMetadata
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
@@ -13,10 +13,10 @@ class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
         self.plain_text_reader = plain_text_reader
         self.ai_models_metadat_parser_service = ai_models_metadata_parser_service
 
-    def load_models_metadata(self, config: dict[str, Any]) -> list[dict[str, Any]]:
+    def load_models_metadata(self, config: InputManifest) -> list[ModelMetadata]:
         rows = self.plain_text_reader.read_csv_from_s3(config["source_csv_path"])
 
-        models_by_id: dict[str, dict[str, Any]] = {}
+        models_by_id: dict[str, ModelMetadata] = {}
 
         for row in rows:
             model_id = str(row.get("model_id") or "").strip()
@@ -34,7 +34,7 @@ class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
             row["downloads"] = self.ai_models_metadat_parser_service.safe_int(row.get("downloads"))
             row["likes"] = self.ai_models_metadat_parser_service.safe_int(row.get("likes"))
 
-            models_by_id[model_id] = row
+            models_by_id[model_id] = ModelMetadata(row)
 
         models = list(models_by_id.values())
 

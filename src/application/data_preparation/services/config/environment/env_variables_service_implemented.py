@@ -11,5 +11,5 @@ class EnvironmentVariablesService(EnvVariablesService):
             cls._instance = super(EnvironmentVariablesService, cls).__new__(cls)
         return cls._instance
 
-    def load_env_variable(self, variable_name) -> str:
+    def load_env_variable(self, variable_name) -> str | None:
         return os.environ.get(variable_name)
