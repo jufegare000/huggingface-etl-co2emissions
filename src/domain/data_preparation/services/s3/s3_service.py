@@ -5,6 +5,7 @@ from botocore.client import BaseClient
 
 class S3Service(Protocol):
 
+    # TODO: Domain should be infrastructure agnostic, this protocol is using a external library
     def get_client(self) -> BaseClient:
         ...
 

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from application.data_preparation.services.dynamodb.dynamodb_conversion_service_implemented import (
+from infrastructure.out.dynamo.services.impl.dynamodb_conversion_service_implemented import (
     DynamoDBTypeConversionServiceImplemented
 )
 

@@ -24,7 +24,8 @@ class HFTokenClass:
 
         return response["SecretString"]
 
-    def get_token_from_glue(self) -> str:
+    @staticmethod
+    def get_token_from_glue() -> str:
         try:
             from awsglue.utils import getResolvedOptions
         except ImportError as e:
@@ -33,7 +34,8 @@ class HFTokenClass:
         args = getResolvedOptions(sys.argv, ["hf_token"])
         return args["hf_token"]
 
-    def _get_token_from_local(self) -> str | None:
+    @staticmethod
+    def _get_token_from_local() -> str | None:
         parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument("--hf_token", required=False)
         known_args, _ = parser.parse_known_args()

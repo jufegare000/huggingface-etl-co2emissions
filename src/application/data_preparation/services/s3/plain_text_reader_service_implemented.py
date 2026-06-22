@@ -1,10 +1,11 @@
-from domain.data_preparation.models.s3.bucket_uri import BucketURI
-from domain.data_preparation.services.plain_texts.plain_text_reader_service import PlainTextReaderService
-from typing import Any
 import csv
 import io
+from typing import Any
+from domain.data_preparation.models.s3.bucket_uri import BucketURI
+from domain.data_preparation.services.plain_texts.plain_text_reader_service import PlainTextReaderService
 from domain.data_preparation.services.s3.s3_parser_service import S3ParserService
 from domain.data_preparation.services.s3.s3_service import S3Service
+
 
 class PlainTextReaderServiceImplemented(PlainTextReaderService):
 
