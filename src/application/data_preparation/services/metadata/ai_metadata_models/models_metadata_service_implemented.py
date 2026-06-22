@@ -1,5 +1,5 @@
-from domain.data_preparation.models.data.input_manifest import InputManifest
-from domain.data_preparation.models.data.model_metadata import ModelMetadata
+from domain.data_preparation.models.preparation.input_manifest import InputManifest
+from domain.data_preparation.models.preparation.model_metadata import ModelMetadata
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
@@ -14,7 +14,7 @@ class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
         self.ai_models_metadat_parser_service = ai_models_metadata_parser_service
 
     def load_models_metadata(self, config: InputManifest) -> list[ModelMetadata]:
-        rows = self.plain_text_reader.read_csv_from_s3(config["source_csv_path"])
+        rows = self.plain_text_reader.read_csv_from_s3(config.source_csv_path)
 
         models_by_id: dict[str, ModelMetadata] = {}
 

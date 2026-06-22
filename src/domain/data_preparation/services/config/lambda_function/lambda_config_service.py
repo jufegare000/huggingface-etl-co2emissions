@@ -1,5 +1,5 @@
 from typing import Protocol, Any
-from domain.data_preparation.models.data.input_manifest import InputManifest
+from domain.data_preparation.models.preparation.input_manifest import InputManifest
 
 
 class LambdaConfigService(Protocol):
