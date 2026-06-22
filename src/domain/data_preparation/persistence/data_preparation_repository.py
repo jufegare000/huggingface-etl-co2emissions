@@ -1,8 +1,7 @@
-from typing import Any, Protocol
+from typing import Protocol
 
 from domain.data_preparation.models.preparation.final_manifest import FinalManifest
 from domain.data_preparation.models.preparation.input_manifest import InputManifest
-from domain.data_preparation.models.preparation.partition_descriptor import PartitionDescriptor
 from domain.data_preparation.models.preparation.persistence_structure import PersistenceStructure
 
 
