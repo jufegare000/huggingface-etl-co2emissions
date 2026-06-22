@@ -1,4 +1,4 @@
-from domain.data_preparation.models.data.input_manifest import InputManifest
+from domain.data_preparation.models.preparation.input_manifest import InputManifest
 from domain.data_preparation.services.config.lambda_function.lambda_config_validator_service import LambdaConfigValidatorService
 
 
