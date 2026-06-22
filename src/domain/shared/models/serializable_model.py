@@ -33,4 +33,7 @@ class SerializableModel:
         if isinstance(obj, Decimal):
             return float(obj)
 
+        if hasattr(obj, "__dict__"):
+            return {k: cls._serialize(v) for k, v in obj.__dict__.items()}
+
         return obj
