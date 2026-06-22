@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
+from typing import Any
 from config.injection.dependency_injector import data_parsing_service
 from config.injection.dependency_injector import s3_service
 from config.injection.dependency_injector import lambda_config_service
@@ -14,16 +15,14 @@ import boto3
 
 dynamodb = boto3.resource("dynamodb")
 
-type FinalManifest = Dict[str, Any]
-from typing import Any, TypedDict
+type FinalManifest = dict[str, Any]
 
-from typing import Any, Dict, List, Tuple
 
 def build_manifest(
-    partitions: List[Dict[str, Any]],
+    partitions: list[dict[str, Any]],
     bucket: str,
-    config: Dict[str, Any],
-) -> Tuple[Dict[str, Any], str]:
+    config: dict[str, Any],
+) -> tuple[dict[str, Any], str]:
     manifest_key = f"{config['prepared_prefix'].strip('/')}/manifest.json"
     manifest = {
         "run_id": config["run_id"],
@@ -43,15 +42,15 @@ def build_manifest(
 
 
 def persist_preparation_output(
-        partitions: List[Dict[str, Any]],
+        partitions: list[dict[str, Any]],
         bucket: str,
-        config: Dict[str, Any],
-) -> Dict[str, Any]:
+        config: dict[str, Any],
+) -> dict[str, Any]:
     manifest, manifest_key = build_manifest(partitions, bucket, config)
 
     s3_service.write_json_to_s3(manifest, bucket, manifest_key)
 
-    persistence_structure: Dict[str, Any] = data_preparation_repository.persist_preparation_output(partitions, bucket,
+    persistence_structure: dict[str, Any] = data_preparation_repository.persist_preparation_output(partitions, bucket,
                                                                                                    config, manifest,
                                                                                                    manifest_key)
 
@@ -59,11 +58,11 @@ def persist_preparation_output(
 
 
 def build_step_function_output(
-        partitions: List[Dict[str, Any]],
-        persistence_result: Dict[str, Any],
+        partitions: list[dict[str, Any]],
+        persistence_result: dict[str, Any],
         bucket_name: str,
-        config: Dict[str, Any],
-) -> Dict[str, Any]:
+        config: dict[str, Any],
+) -> dict[str, Any]:
     return {
         "run_id": config["run_id"],
         "bucket_name": bucket_name,
@@ -75,7 +74,7 @@ def build_step_function_output(
     }
 
 
-def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     manifest = lambda_config_service.load_input_manifest(event)
 
     ai_models_metadata = models_metadata_service.load_models_metadata(manifest)

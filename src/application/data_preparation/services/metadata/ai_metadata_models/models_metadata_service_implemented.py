@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
@@ -13,10 +13,10 @@ class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
         self.plain_text_reader = plain_text_reader
         self.ai_models_metadat_parser_service = ai_models_metadata_parser_service
 
-    def load_models_metadata(self, config: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def load_models_metadata(self, config: dict[str, Any]) -> list[dict[str, Any]]:
         rows = self.plain_text_reader.read_csv_from_s3(config["source_csv_path"])
 
-        models_by_id: Dict[str, Dict[str, Any]] = {}
+        models_by_id: dict[str, dict[str, Any]] = {}
 
         for row in rows:
             model_id = str(row.get("model_id") or "").strip()
