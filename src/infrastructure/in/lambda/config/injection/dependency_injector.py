@@ -39,7 +39,7 @@ from infrastructure.out.dynamo.services.type_conversion_service import TypeConve
 from domain.data_preparation.services.s3.s3_service import S3Service
 from domain.data_preparation.persistence.data_preparation_repository import DataPreparationRepository
 from domain.data_preparation.services.config.lambda_function.lambda_config_service import LambdaConfigService
-from infrastructure.out.dynamo_db.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
+from infrastructure.out.dynamo.repository.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()

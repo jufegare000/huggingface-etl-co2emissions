@@ -4,7 +4,7 @@ from domain.data_preparation.models.preparation.persistence_structure import Per
 from domain.data_preparation.persistence.data_preparation_repository import DataPreparationRepository
 from infrastructure.out.dynamo.mappers.dynamo_db_data_preparation_mapper import DynamoDBDataPreparationMapper
 from infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
-from infrastructure.out.dynamo_db.dynamo_db_client import DynamoDBClient
+from infrastructure.out.dynamo.dynamo_db_client import DynamoDBClient
 
 
 class DynamoDBDataPreparationRepository(DataPreparationRepository):
