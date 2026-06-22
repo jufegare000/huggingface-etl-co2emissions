@@ -1,7 +1,8 @@
-from domain.data_preparation.models.data.boundary import Boundary
-from domain.data_preparation.models.data.input_manifest import InputManifest
-from domain.data_preparation.models.data.model_metadata import ModelMetadata
-from domain.data_preparation.models.data.partition_descriptor import PartitionDescriptor
+from domain.data_preparation.models.preparation.boundary import Boundary
+from domain.data_preparation.models.preparation.input_manifest import InputManifest
+from domain.data_preparation.models.preparation.model_metadata import ModelMetadata
+from domain.data_preparation.models.preparation.partition_descriptor import PartitionDescriptor
+from domain.data_preparation.models.preparation.partition_status import PartitionStatus
 from domain.data_preparation.services.config.partitions.partition_descriptor_service import PartitionDescriptorService
 from domain.data_preparation.services.s3.s3_service import S3Service
 
@@ -18,15 +19,15 @@ class PartitionDescriptorServiceImplemented(PartitionDescriptorService):
             models: list[ModelMetadata],
     ) -> list[PartitionDescriptor]:
         partitions: list[PartitionDescriptor] = []
-        bucket = config["bucket_name"]
-        prepared_prefix = config["prepared_prefix"].strip("/")
+        bucket = config.bucket_name
+        prepared_prefix = config.prepared_prefix.strip("/")
 
         for boundary in boundaries:
-            partition_id = boundary["partition_id"]
+            partition_id = boundary.partition_id
             partition_id_str = f"{partition_id:06d}"
 
-            start_index = boundary["start_index"]
-            end_index = boundary["end_index"]
+            start_index = boundary.start_index
+            end_index = boundary.end_index
 
             partition_rows = models[start_index:end_index]
 
@@ -38,14 +39,13 @@ class PartitionDescriptorServiceImplemented(PartitionDescriptorService):
                 key=input_key,
             )
 
-            partitions.append(PartitionDescriptor({
-                "partition_id": partition_id_str,
-                "input_path": f"s3://{bucket}/{input_key}",
-                "thread_count": config["threads_per_worker"],
-                "records_count": boundary["records_count"],
-                "emission_min": boundary["emission_min"],
-                "emission_max": boundary["emission_max"],
-                "status": "PENDING",
-            }))
-
+            partitions.append(PartitionDescriptor(
+                partition_id=partition_id_str,
+                input_path=f"s3://{bucket}/{input_key}",
+                thread_count=config.threads_per_worker,
+                records_count=boundary.records_count,
+                emission_min=boundary.emission_min,
+                emission_max=boundary.emission_max,
+                status=PartitionStatus.PENDING,
+            ))
         return partitions
