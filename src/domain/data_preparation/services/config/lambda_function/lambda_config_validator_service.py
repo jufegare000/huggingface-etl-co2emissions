@@ -1,6 +1,6 @@
-from typing import Protocol, Dict, Any
+from typing import Protocol, Any
 
 
 class LambdaConfigValidatorService(Protocol):
-    def validate_input(self, config: Dict[str, Any]) -> None:
+    def validate_input(self, config: dict[str, Any]) -> None:
         ...

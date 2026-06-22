@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any
 
 from domain.data_preparation.services.config.partitions.partition_descriptor_service import PartitionDescriptorService
 from domain.data_preparation.services.s3.s3_service import S3Service
@@ -11,10 +11,10 @@ class PartitionDescriptorServiceImplemented(PartitionDescriptorService):
 
     def build_partition_descriptors(
             self,
-            boundaries: List[Dict[str, Any]],
-            config: Dict[str, Any],
-            models: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+            boundaries: list[dict[str, Any]],
+            config: dict[str, Any],
+            models: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
         partitions = []
         bucket = config["bucket_name"]
         prepared_prefix = config["prepared_prefix"].strip("/")

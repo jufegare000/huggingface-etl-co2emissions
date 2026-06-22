@@ -1,11 +1,11 @@
-from typing import Any, Dict, List, Protocol
+from typing import Any, Protocol
 
 
 class PartitionDescriptorService(Protocol):
     def build_partition_descriptors(
             self,
-            boundaries: List[Dict[str, Any]],
-            config: Dict[str, Any],
-            models: List[Dict[str, Any]],
-    ) -> List[Dict[str, Any]]:
+            boundaries: list[dict[str, Any]],
+            config: dict[str, Any],
+            models: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
         ...

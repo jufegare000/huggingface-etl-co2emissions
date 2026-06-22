@@ -1,10 +1,10 @@
 from domain.data_preparation.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
-from typing import Any, Optional
+from typing import Any
 
 
 class AIModelsMetadataParserServiceImplemented(AIModelsMetadataParserService):
-    def safe_float(self, value: Any) -> Optional[float]:
+    def safe_float(self, value: Any) -> float | None:
         if value is None:
             return None
 

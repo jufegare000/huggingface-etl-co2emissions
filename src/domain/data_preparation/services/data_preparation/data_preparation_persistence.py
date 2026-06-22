@@ -1,11 +1,11 @@
-from typing import Any, Dict, List, Protocol
+from typing import Any, Protocol
 
 
 class DataPreparationPersistence(Protocol):
     def persist_preparation_output(
             self,
-            partitions: List[Dict[str, Any]],
+            partitions: list[dict[str, Any]],
             bucket: str,
-            config: Dict[str, Any],
-    ) -> Dict[str, Any]:
+            config: dict[str, Any],
+    ) -> dict[str, Any]:
         ...
