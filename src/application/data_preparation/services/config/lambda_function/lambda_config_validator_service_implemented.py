@@ -1,5 +1,5 @@
+from domain.data_preparation.models.data.input_manifest import InputManifest
 from domain.data_preparation.services.config.lambda_function.lambda_config_validator_service import LambdaConfigValidatorService
-from typing import Any
 
 
 class LambdaConfigValidatorServiceImplemented(LambdaConfigValidatorService):
@@ -7,7 +7,7 @@ class LambdaConfigValidatorServiceImplemented(LambdaConfigValidatorService):
     def __init__(self, s3_uri_service):
         self.s3_uri_service = s3_uri_service
 
-    def validate_input(self, config: dict[str, Any]) -> None:
+    def validate_input(self, config: InputManifest) -> None:
         if config["workers"] <= 0:
             raise ValueError("workers must be > 0")
 

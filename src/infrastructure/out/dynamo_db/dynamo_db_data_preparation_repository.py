@@ -1,5 +1,8 @@
+from domain.data_preparation.models.data.final_manifest import FinalManifest
+from domain.data_preparation.models.data.input_manifest import InputManifest
+from domain.data_preparation.models.data.partition_descriptor import PartitionDescriptor
+from domain.data_preparation.models.data.persistence_structure import PersistenceStructure
 from domain.data_preparation.persistence.data_preparation_repository import DataPreparationRepository
-from typing import Any, Dict, List
 
 from domain.data_preparation.services.date_parsing_service import DataParsingService
 from infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
@@ -16,13 +19,12 @@ class DynamoDBDataPreparationRepository(DataPreparationRepository):
 
     def persist_preparation_output(
             self,
-            partitions: List[Dict[str, Any]],
+            partitions: list[PartitionDescriptor],
             bucket: str,
-            config: Dict[str, Any],
-            manifest: dict[str, str | int],
+            config: InputManifest,
+            manifest: FinalManifest,
             manifest_key: str
-    ) -> Dict[str, Any]:
-
+    ) -> PersistenceStructure:
         table = DynamoDBClient.dynamodb_client.Table(config["control_table_name"])
 
         table.put_item(
@@ -132,7 +134,7 @@ class DynamoDBDataPreparationRepository(DataPreparationRepository):
                     })
                 )
 
-        return {
+        return PersistenceStructure({
             "manifest_path": manifest["manifest_path"],
             "partitions_count": len(partitions),
-        }
+        })
