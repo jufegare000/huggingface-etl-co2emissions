@@ -1,10 +1,10 @@
-from typing import Any, Protocol, Dict, List
+from typing import Any, Protocol
 
 
 class BoundariesCalculationService(Protocol):
     def calculate_percentile_boundaries(
             self,
-            models: List[Dict[str, Any]],
+            models: list[dict[str, Any]],
             workers: int,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         ...

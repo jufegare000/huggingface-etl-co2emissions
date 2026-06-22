@@ -1,5 +1,5 @@
 from application.data_preparation.services.config.environment.env_variables_service_implemented import EnvironmentVariablesService
-from typing import Dict, Any
+from typing import Any
 from domain.data_preparation.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from domain.data_preparation.services.config.lambda_function.lambda_config_validator_service import LambdaConfigValidatorService
 from domain.data_preparation.services.date_parsing_service import DataParsingService
@@ -12,12 +12,12 @@ class LambdaConfigServiceImplemented(LambdaConfigService):
         self.data_parsing_service = data_parsing_service
         self.lambda_config_validator = lambda_config_validator
 
-    def load_input_manifest(self, event: Dict[str, Any]) -> Dict[str, Any]:
+    def load_input_manifest(self, event: dict[str, Any]) -> dict[str, Any]:
         manifest = self.create_manifest_structure(event)
         self.lambda_config_validator.validate_input(manifest)
         return manifest
 
-    def create_manifest_structure(self, event: Dict[str, Any]):
+    def create_manifest_structure(self, event: dict[str, Any]):
         bucket_name = env_service.load_env_variable("RAW_BUCKET_NAME")
         table_name = env_service.load_env_variable("CONTROL_TABLE_NAME")
         if not table_name:
