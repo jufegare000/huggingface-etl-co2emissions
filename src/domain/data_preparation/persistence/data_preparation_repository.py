@@ -1,13 +1,16 @@
-from typing import Any, Dict, List, Protocol
+from typing import Protocol
+
+from domain.data_preparation.models.preparation.final_manifest import FinalManifest
+from domain.data_preparation.models.preparation.input_manifest import InputManifest
+from domain.data_preparation.models.preparation.persistence_structure import PersistenceStructure
 
 
 class DataPreparationRepository(Protocol):
     def persist_preparation_output(
             self,
-            partitions: List[Dict[str, Any]],
             bucket: str,
-            config: Dict[str, Any],
-            manifest: dict[str, str | int],
+            config: InputManifest,
+            manifest: FinalManifest,
             manifest_key: str
-    ) -> Dict[str, Any]:
+    ) -> PersistenceStructure:
         ...

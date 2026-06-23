@@ -2,7 +2,6 @@ import boto3
 import os
 import sys
 import argparse
-from typing import Optional
 
 class HFTokenClass:
     @staticmethod
@@ -25,7 +24,8 @@ class HFTokenClass:
 
         return response["SecretString"]
 
-    def get_token_from_glue(self) -> str:
+    @staticmethod
+    def get_token_from_glue() -> str:
         try:
             from awsglue.utils import getResolvedOptions
         except ImportError as e:
@@ -34,7 +34,8 @@ class HFTokenClass:
         args = getResolvedOptions(sys.argv, ["hf_token"])
         return args["hf_token"]
 
-    def _get_token_from_local(self) -> Optional[str]:
+    @staticmethod
+    def _get_token_from_local() -> str | None:
         parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument("--hf_token", required=False)
         known_args, _ = parser.parse_known_args()
@@ -45,8 +46,6 @@ class HFTokenClass:
         return os.getenv("HF_TOKEN")
 
     def get_hf_token_from_call(self) -> str:
-        token = None
-
         try:
             token = self.get_token_from_glue()
         except Exception:
