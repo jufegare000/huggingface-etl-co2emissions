@@ -1,6 +1,69 @@
 .
 ├── CLAUDE.md
 ├── ETL.png
+├── htmlcov
+│   ├── class_index.html
+│   ├── coverage_html_cb_dd2e7eb5.js
+│   ├── favicon_32_cb_c827f16f.png
+│   ├── function_index.html
+│   ├── index.html
+│   ├── keybd_closed_cb_900cfef5.png
+│   ├── status.json
+│   ├── style_cb_4667309f.css
+│   ├── z_0a7b7a709fbc10e7_data_manifest_builder_service_py.html
+│   ├── z_12dea515ed7d1297_lambda_config_service_py.html
+│   ├── z_12dea515ed7d1297_lambda_config_validator_service_py.html
+│   ├── z_1db9ddf77956bd9d_date_parsing_service_implemented_py.html
+│   ├── z_2072c7eac5d16dc8_partition_descriptor_service_py.html
+│   ├── z_23c15ebe8d4c550a_raw_data_set_columns_py.html
+│   ├── z_340ee18dd3c9bf9b_plain_text_reader_service_py.html
+│   ├── z_3c52306e827b8b3d_bucket_uri_py.html
+│   ├── z_3c74a3c5cbe07e60_dynamodb_conversion_service_implemented_py.html
+│   ├── z_429b0674fb75e764_s3_client_py.html
+│   ├── z_429b0674fb75e764_s3_writter_py.html
+│   ├── z_478015f3183fe7b1_plain_text_reader_service_implemented_py.html
+│   ├── z_478015f3183fe7b1_raw_data_set_columns_py.html
+│   ├── z_478015f3183fe7b1_s3_parser_service_implemented_py.html
+│   ├── z_478015f3183fe7b1_s3_service_implemented_py.html
+│   ├── z_47c012c99561fe35_discovery_py.html
+│   ├── z_47c012c99561fe35_gold_consolidation_py.html
+│   ├── z_47c012c99561fe35_raw_ingestion_py.html
+│   ├── z_4a555eabbb6093c2_data_preparation_job_py.html
+│   ├── z_538505abbc9c7530_ai_models_metadata_parser_service_implemented_py.html
+│   ├── z_538505abbc9c7530_models_metadata_service_implemented_py.html
+│   ├── z_5c428dad5ff1de78_dynamo_db_data_preparation_repository_py.html
+│   ├── z_6d7c3cb0afd6227a_env_variables_service_implemented_py.html
+│   ├── z_716f696a6a41aee1_dynamo_value_py.html
+│   ├── z_76fbdfb2a837a7c8_serializable_model_py.html
+│   ├── z_77154b289d297de5_dependency_injector_py.html
+│   ├── z_79125fb99ed95de5_dynamo_db_client_py.html
+│   ├── z_96c5ffaf32c5e345_boundaries_calculation_service_implemented_py.html
+│   ├── z_be8feb067acbe280_data_preparation_repository_py.html
+│   ├── z_c01d317c227d7945_s3_parser_service_py.html
+│   ├── z_c01d317c227d7945_s3_service_py.html
+│   ├── z_c6d13d7f80f2fb33_data_manifest_builder_service_implemented_py.html
+│   ├── z_c9531bdd59a15acf_data_preparation_enum_py.html
+│   ├── z_c9531bdd59a15acf_lambda_config_service_implemented_py.html
+│   ├── z_c9531bdd59a15acf_lambda_config_validator_service_implemented_py.html
+│   ├── z_cc6f0dba9db87aa2_date_parsing_service_py.html
+│   ├── z_d03819685e2bb629_dynamo_db_data_preparation_mapper_implemented_py.html
+│   ├── z_d2888337d9109e65_models_metadata_parser_service_py.html
+│   ├── z_d2888337d9109e65_models_metadata_service_py.html
+│   ├── z_d3b39a44ebd14340_env_variables_service_py.html
+│   ├── z_dc4fa0a8d7acee14_boundaries_calculation_service_py.html
+│   ├── z_dd77089886b3858c_hf_token_config_py.html
+│   ├── z_e0da4434a2339680_type_conversion_service_py.html
+│   ├── z_eb4a395d305d7a56_partition_descriptor_service_implemented_py.html
+│   ├── z_f36d490ad55e969c_boundary_py.html
+│   ├── z_f36d490ad55e969c_final_manifest_py.html
+│   ├── z_f36d490ad55e969c_input_manifest_py.html
+│   ├── z_f36d490ad55e969c_manifest_status_py.html
+│   ├── z_f36d490ad55e969c_model_metadata_py.html
+│   ├── z_f36d490ad55e969c_partition_descriptor_py.html
+│   ├── z_f36d490ad55e969c_partition_status_py.html
+│   ├── z_f36d490ad55e969c_persistence_structure_py.html
+│   ├── z_f36d490ad55e969c_step_function_output_py.html
+│   └── z_fc95f479f9c967de_dynamo_db_data_preparation_mapper_py.html
 ├── iac
 │   ├── environments
 │   │   └── dev
@@ -22,6 +85,8 @@
 │   │       ├── terraform.tfstate
 │   │       ├── terraform.tfstate.backup
 │   │       ├── tfplan
+│   │       ├── tfplan_lambda
+│   │       ├── tfplan_security
 │   │       ├── variables.tf
 │   │       └── workflow.tf
 │   └── modules
@@ -105,23 +170,38 @@
 │   │   │       ├── config
 │   │   │       │   ├── boundaries
 │   │   │       │   │   ├── boundaries_calculation_service_implemented.py
-│   │   │       │   │   └── __init__.py
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── boundaries_calculation_service_implemented.cpython-313.pyc
+│   │   │       │   │       └── __init__.cpython-313.pyc
 │   │   │       │   ├── environment
 │   │   │       │   │   ├── env_variables_service_implemented.py
-│   │   │       │   │   └── __init__.py
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── env_variables_service_implemented.cpython-313.pyc
+│   │   │       │   │       └── __init__.cpython-313.pyc
 │   │   │       │   ├── __init__.py
 │   │   │       │   ├── lambda_function
 │   │   │       │   │   ├── data_preparation_enum.py
 │   │   │       │   │   ├── __init__.py
 │   │   │       │   │   ├── lambda_config_service_implemented.py
-│   │   │       │   │   └── lambda_config_validator_service_implemented.py
+│   │   │       │   │   ├── lambda_config_validator_service_implemented.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── data_preparation_enum.cpython-313.pyc
+│   │   │       │   │       ├── __init__.cpython-313.pyc
+│   │   │       │   │       ├── lambda_config_service_implemented.cpython-313.pyc
+│   │   │       │   │       └── lambda_config_validator_service_implemented.cpython-313.pyc
 │   │   │       │   ├── manifests
 │   │   │       │   │   ├── data_manifest_builder_service_implemented.py
 │   │   │       │   │   └── __init__.py
-│   │   │       │   └── partitions
-│   │   │       │       ├── __init__.py
-│   │   │       │       └── partition_descriptor_service_implemented.py
-│   │   │       ├── data_preparation_persistenceImplemented.py
+│   │   │       │   ├── partitions
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   ├── partition_descriptor_service_implemented.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── __init__.cpython-313.pyc
+│   │   │       │   │       └── partition_descriptor_service_implemented.cpython-313.pyc
+│   │   │       │   └── __pycache__
+│   │   │       │       └── __init__.cpython-313.pyc
 │   │   │       ├── dates
 │   │   │       │   ├── date_parsing_service_implemented.py
 │   │   │       │   ├── __init__.py
@@ -129,8 +209,6 @@
 │   │   │       │       ├── date_parsing_service_implemented.cpython-313.pyc
 │   │   │       │       └── __init__.cpython-313.pyc
 │   │   │       ├── dynamodb
-│   │   │       │   ├── dynamodb_conversion_service_implemented.py
-│   │   │       │   ├── __init__.py
 │   │   │       │   └── __pycache__
 │   │   │       │       ├── dynamodb_conversion_service_implemented.cpython-313.pyc
 │   │   │       │       └── __init__.cpython-313.pyc
@@ -139,15 +217,26 @@
 │   │   │       │   ├── ai_metadata_models
 │   │   │       │   │   ├── ai_models_metadata_parser_service_implemented.py
 │   │   │       │   │   ├── __init__.py
-│   │   │       │   │   └── models_metadata_service_implemented.py
+│   │   │       │   │   ├── models_metadata_service_implemented.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── ai_models_metadata_parser_service_implemented.cpython-313.pyc
+│   │   │       │   │       └── __init__.cpython-313.pyc
 │   │   │       │   ├── __init__.py
-│   │   │       │   └── plain_texts
-│   │   │       │       └── __init__.py
+│   │   │       │   ├── plain_texts
+│   │   │       │   │   └── __init__.py
+│   │   │       │   └── __pycache__
+│   │   │       │       └── __init__.cpython-313.pyc
 │   │   │       ├── __pycache__
 │   │   │       │   └── __init__.cpython-313.pyc
 │   │   │       └── s3
 │   │   │           ├── __init__.py
 │   │   │           ├── plain_text_reader_service_implemented.py
+│   │   │           ├── __pycache__
+│   │   │           │   ├── __init__.cpython-313.pyc
+│   │   │           │   ├── plain_text_reader_service_implemented.cpython-313.pyc
+│   │   │           │   ├── raw_data_set_columns.cpython-313.pyc
+│   │   │           │   ├── s3_parser_service_implemented.cpython-313.pyc
+│   │   │           │   └── s3_service_implemented.cpython-313.pyc
 │   │   │           ├── raw_data_set_columns.py
 │   │   │           ├── s3_parser_service_implemented.py
 │   │   │           └── s3_service_implemented.py
@@ -160,12 +249,41 @@
 │   │   │   ├── __init__.py
 │   │   │   ├── models
 │   │   │   │   ├── __init__.py
+│   │   │   │   ├── preparation
+│   │   │   │   │   ├── boundary.py
+│   │   │   │   │   ├── final_manifest.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   ├── input_manifest.py
+│   │   │   │   │   ├── manifest_status.py
+│   │   │   │   │   ├── model_metadata.py
+│   │   │   │   │   ├── partition_descriptor.py
+│   │   │   │   │   ├── partition_status.py
+│   │   │   │   │   ├── persistence_structure.py
+│   │   │   │   │   ├── __pycache__
+│   │   │   │   │   │   ├── boundary.cpython-313.pyc
+│   │   │   │   │   │   ├── final_manifest.cpython-313.pyc
+│   │   │   │   │   │   ├── __init__.cpython-313.pyc
+│   │   │   │   │   │   ├── input_manifest.cpython-313.pyc
+│   │   │   │   │   │   ├── manifest_status.cpython-313.pyc
+│   │   │   │   │   │   ├── model_metadata.cpython-313.pyc
+│   │   │   │   │   │   ├── partition_descriptor.cpython-313.pyc
+│   │   │   │   │   │   ├── partition_status.cpython-313.pyc
+│   │   │   │   │   │   └── persistence_structure.cpython-313.pyc
+│   │   │   │   │   └── step_function_output.py
+│   │   │   │   ├── __pycache__
+│   │   │   │   │   └── __init__.cpython-313.pyc
 │   │   │   │   └── s3
 │   │   │   │       ├── bucket_uri.py
-│   │   │   │       └── __init__.py
+│   │   │   │       ├── __init__.py
+│   │   │   │       └── __pycache__
+│   │   │   │           ├── bucket_uri.cpython-313.pyc
+│   │   │   │           └── __init__.cpython-313.pyc
 │   │   │   ├── persistence
 │   │   │   │   ├── data_preparation_repository.py
-│   │   │   │   └── __init__.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── __pycache__
+│   │   │   │       ├── data_preparation_repository.cpython-313.pyc
+│   │   │   │       └── __init__.cpython-313.pyc
 │   │   │   ├── __pycache__
 │   │   │   │   ├── __init__.cpython-311.pyc
 │   │   │   │   └── __init__.cpython-313.pyc
@@ -173,23 +291,37 @@
 │   │   │       ├── config
 │   │   │       │   ├── boundaries
 │   │   │       │   │   ├── boundaries_calculation_service.py
-│   │   │       │   │   └── __init__.py
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── boundaries_calculation_service.cpython-313.pyc
+│   │   │       │   │       └── __init__.cpython-313.pyc
 │   │   │       │   ├── environment
 │   │   │       │   │   ├── env_variables_service.py
-│   │   │       │   │   └── __init__.py
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── env_variables_service.cpython-313.pyc
+│   │   │       │   │       └── __init__.cpython-313.pyc
 │   │   │       │   ├── __init__.py
 │   │   │       │   ├── lambda_function
 │   │   │       │   │   ├── __init__.py
 │   │   │       │   │   ├── lambda_config_service.py
-│   │   │       │   │   └── lambda_config_validator_service.py
+│   │   │       │   │   ├── lambda_config_validator_service.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── __init__.cpython-313.pyc
+│   │   │       │   │       ├── lambda_config_service.cpython-313.pyc
+│   │   │       │   │       └── lambda_config_validator_service.cpython-313.pyc
 │   │   │       │   ├── manifests
 │   │   │       │   │   ├── data_manifest_builder_service.py
 │   │   │       │   │   └── __init__.py
-│   │   │       │   └── partitions
-│   │   │       │       ├── __init__.py
-│   │   │       │       └── partition_descriptor_service.py
+│   │   │       │   ├── partitions
+│   │   │       │   │   ├── __init__.py
+│   │   │       │   │   ├── partition_descriptor_service.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── __init__.cpython-313.pyc
+│   │   │       │   │       └── partition_descriptor_service.cpython-313.pyc
+│   │   │       │   └── __pycache__
+│   │   │       │       └── __init__.cpython-313.pyc
 │   │   │       ├── data_preparation
-│   │   │       │   ├── data_preparation_persistence.py
 │   │   │       │   └── __init__.py
 │   │   │       ├── date_parsing_service.py
 │   │   │       ├── __init__.py
@@ -197,11 +329,19 @@
 │   │   │       │   ├── ai_metadata_models
 │   │   │       │   │   ├── __init__.py
 │   │   │       │   │   ├── models_metadata_parser_service.py
-│   │   │       │   │   └── models_metadata_service.py
-│   │   │       │   └── __init__.py
+│   │   │       │   │   ├── models_metadata_service.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── __init__.cpython-313.pyc
+│   │   │       │   │       └── models_metadata_parser_service.cpython-313.pyc
+│   │   │       │   ├── __init__.py
+│   │   │       │   └── __pycache__
+│   │   │       │       └── __init__.cpython-313.pyc
 │   │   │       ├── plain_texts
 │   │   │       │   ├── __init__.py
-│   │   │       │   └── plain_text_reader_service.py
+│   │   │       │   ├── plain_text_reader_service.py
+│   │   │       │   └── __pycache__
+│   │   │       │       ├── __init__.cpython-313.pyc
+│   │   │       │       └── plain_text_reader_service.cpython-313.pyc
 │   │   │       ├── __pycache__
 │   │   │       │   ├── date_parsing_service.cpython-311.pyc
 │   │   │       │   ├── date_parsing_service.cpython-313.pyc
@@ -209,12 +349,26 @@
 │   │   │       │   └── __init__.cpython-313.pyc
 │   │   │       └── s3
 │   │   │           ├── __init__.py
+│   │   │           ├── __pycache__
+│   │   │           │   ├── __init__.cpython-313.pyc
+│   │   │           │   ├── s3_parser_service.cpython-313.pyc
+│   │   │           │   └── s3_service.cpython-313.pyc
 │   │   │           ├── s3_parser_service.py
 │   │   │           └── s3_service.py
 │   │   ├── __init__.py
-│   │   └── __pycache__
-│   │       ├── __init__.cpython-311.pyc
-│   │       └── __init__.cpython-313.pyc
+│   │   ├── __pycache__
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   └── __init__.cpython-313.pyc
+│   │   └── shared
+│   │       ├── __init__.py
+│   │       ├── models
+│   │       │   ├── __init__.py
+│   │       │   ├── __pycache__
+│   │       │   │   ├── __init__.cpython-313.pyc
+│   │       │   │   └── serializable_model.cpython-313.pyc
+│   │       │   └── serializable_model.py
+│   │       └── __pycache__
+│   │           └── __init__.cpython-313.pyc
 │   ├── hf_co2_pipeline.egg-info
 │   │   ├── dependency_links.txt
 │   │   ├── PKG-INFO
@@ -249,7 +403,20 @@
 │   │   ├── __init__.py
 │   │   ├── out
 │   │   │   ├── dynamo
+│   │   │   │   ├── dynamo_db_client.py
 │   │   │   │   ├── __init__.py
+│   │   │   │   ├── mappers
+│   │   │   │   │   ├── dynamo_db_data_preparation_mapper.py
+│   │   │   │   │   ├── impl
+│   │   │   │   │   │   ├── dynamo_db_data_preparation_mapper_implemented.py
+│   │   │   │   │   │   ├── __init__.py
+│   │   │   │   │   │   └── __pycache__
+│   │   │   │   │   │       ├── dynamo_db_data_preparation_mapper_implemented.cpython-313.pyc
+│   │   │   │   │   │       └── __init__.cpython-313.pyc
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── __pycache__
+│   │   │   │   │       ├── dynamo_db_data_preparation_mapper.cpython-313.pyc
+│   │   │   │   │       └── __init__.cpython-313.pyc
 │   │   │   │   ├── parsing_utils
 │   │   │   │   │   ├── dynamo_value.py
 │   │   │   │   │   ├── __init__.py
@@ -259,9 +426,22 @@
 │   │   │   │   │       ├── __init__.cpython-311.pyc
 │   │   │   │   │       └── __init__.cpython-313.pyc
 │   │   │   │   ├── __pycache__
+│   │   │   │   │   ├── dynamo_db_client.cpython-313.pyc
 │   │   │   │   │   ├── __init__.cpython-311.pyc
 │   │   │   │   │   └── __init__.cpython-313.pyc
+│   │   │   │   ├── repository
+│   │   │   │   │   ├── dynamo_db_data_preparation_repository.py
+│   │   │   │   │   ├── __init__.py
+│   │   │   │   │   └── __pycache__
+│   │   │   │   │       ├── dynamo_db_data_preparation_repository.cpython-313.pyc
+│   │   │   │   │       └── __init__.cpython-313.pyc
 │   │   │   │   └── services
+│   │   │   │       ├── impl
+│   │   │   │       │   ├── dynamodb_conversion_service_implemented.py
+│   │   │   │       │   ├── __init__.py
+│   │   │   │       │   └── __pycache__
+│   │   │   │       │       ├── dynamodb_conversion_service_implemented.cpython-313.pyc
+│   │   │   │       │       └── __init__.cpython-313.pyc
 │   │   │   │       ├── __init__.py
 │   │   │   │       ├── __pycache__
 │   │   │   │       │   ├── __init__.cpython-311.pyc
@@ -269,10 +449,6 @@
 │   │   │   │       │   ├── type_conversion_service.cpython-311.pyc
 │   │   │   │       │   └── type_conversion_service.cpython-313.pyc
 │   │   │   │       └── type_conversion_service.py
-│   │   │   ├── dynamo_db
-│   │   │   │   ├── dynamo_db_client.py
-│   │   │   │   ├── dynamo_db_data_preparation_repository.py
-│   │   │   │   └── __init__.py
 │   │   │   ├── hugging_face
 │   │   │   │   ├── hf_client.py
 │   │   │   │   └── __pycache__
@@ -301,16 +477,57 @@
 ├── structure
 ├── tests
 │   ├── application
-│   │   ├── raw_ingestion.py
+│   │   ├── data_preparation
+│   │   │   └── services
+│   │   │       ├── config
+│   │   │       │   ├── boundaries
+│   │   │       │   │   ├── boundaries_calculation_service_implemented_test.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       └── boundaries_calculation_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       │   ├── environment
+│   │   │       │   │   ├── env_variables_service_implemented_test.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       └── env_variables_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       │   ├── lambda_function
+│   │   │       │   │   ├── lambda_config_service_implemented_test.py
+│   │   │       │   │   ├── lambda_config_validator_service_implemented_test.py
+│   │   │       │   │   └── __pycache__
+│   │   │       │   │       ├── lambda_config_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       │   │       └── lambda_config_validator_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       │   └── partitions
+│   │   │       │       ├── partition_descriptor_service_implemented_test.py
+│   │   │       │       └── __pycache__
+│   │   │       │           └── partition_descriptor_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       ├── dates
+│   │   │       │   ├── date_parsing_service_implemented_test.py
+│   │   │       │   └── __pycache__
+│   │   │       │       └── date_parsing_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       ├── metadata
+│   │   │       │   └── ai_metadata_models
+│   │   │       │       ├── ai_models_metadata_parser_service_implemented_test.py
+│   │   │       │       └── __pycache__
+│   │   │       │           └── ai_models_metadata_parser_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │       └── s3
+│   │   │           ├── plain_text_reader_service_implemented_test.py
+│   │   │           ├── __pycache__
+│   │   │           │   ├── plain_text_reader_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │           │   ├── s3_parser_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │           │   └── s3_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │   │           ├── s3_parser_service_implemented_test.py
+│   │   │           └── s3_service_implemented_test.py
 │   │   └── services
-│   │       ├── date_parsing_service_implemented_test.py
-│   │       ├── __pycache__
-│   │       │   ├── date_parsing_service_implemented_test.cpython-311-pytest-8.4.2.pyc
-│   │       │   ├── date_parsing_service_implemented_test.cpython-311-pytest-9.1.1.pyc
-│   │       │   ├── date_parsing_service_implemented_test.cpython-313-pytest-8.4.2.pyc
-│   │       │   ├── type_consersion_service_implemented_test.cpython-311-pytest-8.4.2.pyc
-│   │       │   └── type_consersion_service_implemented_test.cpython-313-pytest-8.4.2.pyc
-│   │       └── type_consersion_service_implemented_test.py
+│   │       └── __pycache__
+│   │           ├── date_parsing_service_implemented_test.cpython-311-pytest-8.4.2.pyc
+│   │           ├── date_parsing_service_implemented_test.cpython-311-pytest-9.1.1.pyc
+│   │           ├── date_parsing_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   │           ├── type_consersion_service_implemented_test.cpython-311-pytest-8.4.2.pyc
+│   │           └── type_consersion_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│   ├── domain
+│   │   └── shared
+│   │       └── models
+│   │           ├── __pycache__
+│   │           │   └── serializable_model_test.cpython-313-pytest-8.4.2.pyc
+│   │           └── serializable_model_test.py
 │   └── infrastructure
 │       ├── in
 │       │   └── glue
@@ -319,14 +536,26 @@
 │       │       ├── __init__.py
 │       │       └── main.py
 │       └── out
-│           ├── hugging_face
-│           │   └── __pycache__
-│           │       ├── test_hf_client_integration.cpython-311-pytest-8.4.2.pyc
-│           │       ├── test_percentile_extraction.cpython-311-pytest-8.4.2.pyc
-│           │       └── test_percentile_extraction.cpython-313-pytest-8.4.2.pyc
-│           └── s3
-│               ├── s3_client.py
-│               └── s3_writter.py
+│           ├── dynamo
+│           │   ├── mappers
+│           │   │   └── impl
+│           │   │       ├── dynamo_db_data_preparation_mapper_implemented_test.py
+│           │   │       └── __pycache__
+│           │   │           └── dynamo_db_data_preparation_mapper_implemented_test.cpython-313-pytest-8.4.2.pyc
+│           │   ├── repository
+│           │   │   ├── dynamo_db_data_preparation_repository_test.py
+│           │   │   └── __pycache__
+│           │   │       └── dynamo_db_data_preparation_repository_test.cpython-313-pytest-8.4.2.pyc
+│           │   └── services
+│           │       └── impl
+│           │           ├── dynamodb_conversion_service_implemented_test.py
+│           │           └── __pycache__
+│           │               └── dynamodb_conversion_service_implemented_test.cpython-313-pytest-8.4.2.pyc
+│           └── hugging_face
+│               └── __pycache__
+│                   ├── test_hf_client_integration.cpython-311-pytest-8.4.2.pyc
+│                   ├── test_percentile_extraction.cpython-311-pytest-8.4.2.pyc
+│                   └── test_percentile_extraction.cpython-313-pytest-8.4.2.pyc
 └── Untitled.ipynb
 
-104 directories, 226 files
+168 directories, 391 files
