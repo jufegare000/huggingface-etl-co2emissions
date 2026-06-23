@@ -1,9 +1,9 @@
 from pathlib import Path
-from typing import Any
-
-import boto3
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from typing import Any
 from domain.data_preparation.models.preparation.final_manifest import FinalManifest
 from domain.data_preparation.models.preparation.input_manifest import InputManifest
 from domain.data_preparation.models.preparation.manifest_status import ManifestStatus
@@ -19,9 +19,6 @@ from config.injection.dependency_injector import partition_descriptor_service
 from config.injection.dependency_injector import data_preparation_repository
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-# TODO: Is not being used, is it necessary?
-dynamodb = boto3.resource("dynamodb")
-
 
 def build_manifest(
         partitions: list[PartitionDescriptor],
@@ -55,7 +52,8 @@ def persist_preparation_output(
 
     s3_service.write_json_to_s3(manifest.to_dict(), bucket, manifest_key)
 
-    persistence_structure = data_preparation_repository.persist_preparation_output(bucket, config, manifest, manifest_key)
+    persistence_structure = data_preparation_repository.persist_preparation_output(bucket, config, manifest,
+                                                                                   manifest_key)
     return persistence_structure
 
 
