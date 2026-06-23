@@ -1,10 +1,13 @@
-from typing import Any, Protocol, Dict, List
+from typing import Protocol
+
+from domain.data_preparation.models.preparation.boundary import Boundary
+from domain.data_preparation.models.preparation.model_metadata import ModelMetadata
 
 
 class BoundariesCalculationService(Protocol):
     def calculate_percentile_boundaries(
             self,
-            models: List[Dict[str, Any]],
+            models: list[ModelMetadata],
             workers: int,
-    ) -> List[Dict[str, Any]]:
+    ) -> list[Boundary]:
         ...

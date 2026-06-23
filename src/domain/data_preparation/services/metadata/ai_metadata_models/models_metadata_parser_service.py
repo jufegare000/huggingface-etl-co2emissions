@@ -1,8 +1,8 @@
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 
 class AIModelsMetadataParserService(Protocol):
-    def safe_float(self, value: Any) -> Optional[float]:
+    def safe_float(self, value: Any) -> float | None:
         ...
 
     def safe_int(self, value: Any) -> int:

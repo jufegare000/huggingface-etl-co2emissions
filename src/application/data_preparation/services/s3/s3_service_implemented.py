@@ -1,5 +1,5 @@
 from botocore.client import BaseClient
-from typing import List, Dict, Any
+from typing import Any
 
 from application.data_preparation.services.s3.raw_data_set_columns import CSV_COLUMNS
 from domain.data_preparation.services.s3.s3_service import S3Service
@@ -14,7 +14,7 @@ class S3ServiceImplemented(S3Service):
     def get_client(self) -> BaseClient:
         return self.s3_client
 
-    def write_csv_to_s3(self, rows: List[Dict[str, Any]], bucket: str, key: str) -> None:
+    def write_csv_to_s3(self, rows: list[dict[str, Any]], bucket: str, key: str) -> None:
         buffer = io.StringIO()
         writer = csv.DictWriter(buffer, fieldnames=CSV_COLUMNS, extrasaction="ignore")
         writer.writeheader()
@@ -27,7 +27,7 @@ class S3ServiceImplemented(S3Service):
             ContentType="text/csv",
         )
 
-    def write_json_to_s3(self, payload: Dict[str, Any], bucket: str, key: str) -> None:
+    def write_json_to_s3(self, payload: dict[str, Any], bucket: str, key: str) -> None:
         self.get_client().put_object(
             Bucket=bucket,
             Key=key,

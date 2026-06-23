@@ -1,10 +1,11 @@
-from domain.data_preparation.models.s3.bucket_uri import BucketURI
-from domain.data_preparation.services.plain_texts.plain_text_reader_service import PlainTextReaderService
-from typing import List, Dict, Any
 import csv
 import io
+from typing import Any
+from domain.data_preparation.models.s3.bucket_uri import BucketURI
+from domain.data_preparation.services.plain_texts.plain_text_reader_service import PlainTextReaderService
 from domain.data_preparation.services.s3.s3_parser_service import S3ParserService
 from domain.data_preparation.services.s3.s3_service import S3Service
+
 
 class PlainTextReaderServiceImplemented(PlainTextReaderService):
 
@@ -12,7 +13,7 @@ class PlainTextReaderServiceImplemented(PlainTextReaderService):
         self.s3_uri_service = s3_uri_service
         self.s3_service = s3_service
 
-    def read_csv_from_s3(self, s3_uri: str) -> List[Dict[str, Any]]:
+    def read_csv_from_s3(self, s3_uri: str) -> list[dict[str, Any]]:
         parsed_uri: BucketURI = self.s3_uri_service.parse_s3_uri(s3_uri)
 
         response = self.s3_service.get_client().get_object(

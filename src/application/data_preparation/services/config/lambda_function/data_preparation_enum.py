@@ -1,6 +1,4 @@
-from enum import Enum
-
-class DataPreparationConfigParams(Enum):
+class DataPreparationConfigParams:
     DISCOVERY_DEFAULT_KEY = "discovery/hf-carbon/latest/models_with_emissions.csv"
     PREPARED_PREFIX = "prepared/hf-carbon"
     GLOBAL_RATE_LIMIT = 1000
