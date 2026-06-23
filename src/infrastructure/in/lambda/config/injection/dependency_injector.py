@@ -4,11 +4,14 @@ from application.data_preparation.services.config.lambda_function.lambda_config_
     LambdaConfigServiceImplemented
 from application.data_preparation.services.config.lambda_function.lambda_config_validator_service_implemented import \
     LambdaConfigValidatorServiceImplemented
+from application.data_preparation.services.config.manifests.data_manifest_builder_service_implemented import \
+    DataManifestBuilderServiceImplemented
 
 from application.data_preparation.services.config.partitions.partition_descriptor_service_implemented import \
     PartitionDescriptorServiceImplemented
 from application.data_preparation.services.dates.date_parsing_service_implemented import \
     SystemDateTimeServiceImplemented
+from domain.data_preparation.services.config.manifests.data_manifest_builder_service import DataManifestBuilderService
 from infrastructure.out.dynamo.services.impl.dynamodb_conversion_service_implemented import \
     DynamoDBTypeConversionServiceImplemented
 from application.data_preparation.services.metadata.ai_metadata_models.ai_models_metadata_parser_service_implemented import \
@@ -62,3 +65,5 @@ dynamo_db_data_preparation_mapper: DynamoDBDataPreparationMapper = DynamoDBDataP
     data_parsing_service)
 data_preparation_repository: DataPreparationRepository = DynamoDBDataPreparationRepository(
     dynamo_db_data_preparation_mapper, type_conversion_service)
+
+data_manifest_builder: DataManifestBuilderService = DataManifestBuilderServiceImplemented(data_parsing_service)
