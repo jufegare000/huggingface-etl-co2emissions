@@ -2,7 +2,11 @@ from decimal import Decimal
 
 import pytest
 
+<<<<<<<< HEAD:tests/data_preparation/infrastructure/out/dynamo/services/impl/dynamodb_conversion_service_implemented_test.py
 from data_preparation.infrastructure.out.dynamo.services.impl.dynamodb_conversion_service_implemented import (
+========
+from infrastructure.out.dynamo.services.impl.dynamodb_conversion_service_implemented import (
+>>>>>>>> origin/develop:tests/infrastructure/out/dynamo/services/impl/dynamodb_conversion_service_implemented_test.py
     DynamoDBTypeConversionServiceImplemented
 )
 
