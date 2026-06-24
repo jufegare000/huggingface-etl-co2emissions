@@ -13,6 +13,6 @@ resource "aws_s3_object" "glue_gold_script" {
   bucket = module.s3_etl_dev.bucket_id
   key    = "scripts/gold_consolidation.py"
 
-  source = "../../../src/infrastructure/in/glue/gold_consolidation.py"
-  etag   = filemd5("../../../src/infrastructure/in/glue/gold_consolidation.py")
+  source = "../../../src/raw_ingestion/infrastructure/in/glue/gold_consolidation.py"
+  etag   = filemd5("../../../src/raw_ingestion/infrastructure/in/glue/gold_consolidation.py")
 }

@@ -1,5 +1,5 @@
 module "hf_secrets" {
-  source = "../../modules/secrets"
+  source = "../../modules/secrets_manager"
 
   project_name = local.project_name
   environment  = var.environment

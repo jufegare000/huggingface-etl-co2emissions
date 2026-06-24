@@ -110,7 +110,9 @@ checkpoints/
 
 .terraform/
 
-iac/environments/dev/tfplan
+tfplan
+tfplan*
+*tfplan*
 *.tfstate.backup
 
 *.tfvars

@@ -1,7 +1,6 @@
 resource "aws_glue_job" "hf_carbon_discovery" {
   name     = "${var.project_name}-hf-carbon-discovery-${var.environment}"
   role_arn = var.glue_role_arn
-
   worker_type       = var.worker_type
   number_of_workers = var.number_of_workers
   timeout           = var.timeout
@@ -17,16 +16,16 @@ resource "aws_glue_job" "hf_carbon_discovery" {
   }
 
   default_arguments = {
+    "--enable-spark-ui"      = "false"
+    "--spark-event-logs-path" = "s3://${var.s3_bucket_id}/spark-logs/"
     "--job-language"                     = "python"
     "--enable-metrics"                   = "true"
     "--enable-continuous-cloudwatch-log" = "true"
-    "--enable-spark-ui"                  = "true"
-
-    "--additional-python-modules" = var.additional_python_modules
-
-    "--customer-driver-env-vars" = join(",", [
+    "--additional-python-modules"        = var.additional_python_modules
+    "--extra-py-files"                   = "s3://${var.s3_bucket_id}/${var.extra_py_files_path}"
+    "--customer-driver-env-vars"         = join(",", [
       "CUSTOMER_TARGET_BUCKET_NAME=${var.output_bucket_name}",
-      "CUSTOMER_HF_TOKEN_SECRET_NAME=${var.hf_token_secret_name}"
+      "CUSTOMER_HF_TOKEN_SECRET_NAME=${var.hf_token_secret_name}",
     ])
   }
 

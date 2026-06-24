@@ -69,3 +69,8 @@ variable "additional_python_modules" {
   type        = string
   default     =  "requests,boto3,botocore"
 }
+
+variable "extra_py_files_path" {
+  description = "S3 key of the zipped shared source code passed as --extra-py-files to the Glue job."
+  type        = string
+}
