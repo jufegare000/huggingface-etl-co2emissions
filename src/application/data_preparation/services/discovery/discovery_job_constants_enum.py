@@ -1,0 +1,20 @@
+import os
+from enum import Enum
+
+
+class DiscoveryJobConstantsEnum(Enum):
+
+
+    BASE_PREFIX = "discovery/hf-carbon"
+    CHECKPOINT_KEY = f"{BASE_PREFIX}/checkpoints/latest.json"
+
+    HF_MODELS_URL = "https://huggingface.co/api/models"
+
+    PAGE_LIMIT = 1000
+    REQUEST_TIMEOUT_SECONDS = 60
+
+    FLUSH_EVERY_PAGES = 20
+    FLUSH_EVERY_MATCHES = 100
+
+    MAX_429_RETRIES_PER_RUN = 5
+    DEFAULT_429_SLEEP_SECONDS = 180
