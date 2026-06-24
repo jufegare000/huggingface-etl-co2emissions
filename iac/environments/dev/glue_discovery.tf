@@ -9,8 +9,8 @@ resource "aws_s3_object" "glue_discovery_script" {
   bucket = module.s3_etl_dev.bucket_id
   key    = "scripts/discovery.py"
 
-  source = "../../../src/infrastructure/in/glue/discovery/0_discovery_job.py"
-  etag   = filemd5("../../../src/infrastructure/in/glue/discovery/0_discovery_job.py")
+  source = "../../../src/data_discovery/infrastructure/in/glue/discovery/0_discovery_job.py"
+  etag   = filemd5("../../../src/data_discovery/infrastructure/in/glue/discovery/0_discovery_job.py")
 }
 
 module "glue_discovery_job" {

@@ -14,6 +14,6 @@ resource "aws_s3_object" "glue_script" {
   bucket = module.s3_etl_dev.bucket_id
   key    = "scripts/raw_ingestion.py"
 
-  source = "../../../src/infrastructure/in/glue/raw_ingestion.py"
-  etag   = filemd5("../../../src/infrastructure/in/glue/raw_ingestion.py")
+  source = "../../../src/raw_ingestion/infrastructure/in/glue/raw_ingestion.py"
+  etag   = filemd5("../../../src/raw_ingestion/infrastructure/in/glue/raw_ingestion.py")
 }
