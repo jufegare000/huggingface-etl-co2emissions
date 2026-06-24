@@ -1,6 +1,6 @@
 # huggingface-etl-co3emissions
 
-A reproducible, fault-tolerant ETL pipeline built on AWS Glue and PySpark to extract, enrich, and consolidate Hugging Face model metadata into a curated analytical dataset for large-scale sustainability and performance analysis.
+A reproducible, fault-tolerant ETL pipeline built on AWS Lambda, AWS Glue, and PySpark to extract, enrich, and consolidate Hugging Face model metadata into a curated analytical dataset for large-scale sustainability and performance analysis.
 
 ## Overview
 
@@ -27,38 +27,57 @@ The architecture follows a layered approach:
 Hugging Face API
         |
         v
-   Raw Ingestion
+   Raw Ingestion (Glue)
         |
         v
- Bronze Snapshot
+ Bronze Snapshot (S3)
     /        \
    v          v
 Model        Dataset
-Enrichment   Enrichment
+Discovery    Enrichment
+(Glue)       (Glue)
    |          |
    v          v
 Silver       Silver
 Models       Datasets
     \        /
      v      v
- Final Consolidation
+ Gold Consolidation (Glue)
         |
         v
- Gold Curated Dataset
+ Gold Curated Dataset (S3)
         |
         v
 Analytics / Visualization
 ```
 
+The **Data Preparation Lambda** sits before the pipeline. It is triggered to compute the ETL configuration (date boundaries, partition descriptors, input manifest) and pass it to AWS Step Functions, which orchestrates the Glue jobs.
+
+## Code Architecture
+
+The codebase follows a **hexagonal (ports and adapters) architecture** with three layers:
+
+```text
+domain/          ← interfaces, domain models, repository contracts
+application/     ← service and use-case implementations (pure business logic)
+infrastructure/  ← AWS adapters (Lambda handler, Glue entrypoints, DynamoDB, S3, HF client)
+```
+
+- **Domain layer** defines service and repository interfaces as abstract classes. It contains no AWS SDK calls.
+- **Application layer** implements those interfaces with pure business logic.
+- **Infrastructure layer** wires everything together: inbound handlers (Lambda, Glue) and outbound adapters (DynamoDB, S3, Secrets Manager, Hugging Face).
+
 ## Key Features
 
+- Modular, testable hexagonal architecture separating domain, application, and infrastructure concerns
+- Thin Lambda handler — only parses the event, resolves dependencies, and delegates to the use case
+- Dependency injection via a single `dependency_injector.py` module
 - Reproducible execution through parameterized jobs and versioned snapshots
 - Fault tolerance with checkpoints, retries, and recoverable intermediate outputs
 - Incremental processing to avoid unnecessary reprocessing
-- Controlled parallelism for external API calls
 - PySpark-based transformations for scalable joins, aggregation, normalization, and curation
-- Cloud-native deployment using AWS Glue, S3, and optionally Athena and Step Functions
-- **Modular Infrastructure as Code (IaC)** using Terraform with native unit testing.
+- Cloud-native deployment using AWS Lambda, AWS Glue, S3, DynamoDB, and Step Functions
+- **Modular Infrastructure as Code (IaC)** using Terraform with native unit testing
 
 ## Data Layers
 
@@ -123,163 +142,234 @@ Typical fields:
 ## Project Structure
 
 ```text
-hf-co2-pipeline/  
-├── README.md  
-├── LICENSE  
-├── Makefile                 <-- Task orchestration (tests, deploys)
-├── makefiles/               <-- Modular Makefile configurations
-│   ├── deploys.mk
-│   └── tests.mk
-├── pyproject.toml  
-├── requirements.txt  
-├── requirements-dev.txt  
-├── src/  
-│   └── hf_co2_pipeline/  
-│       ├── __init__.py  
-│       ├── config.py  
-│       ├── entrypoints/  
-│       │   └── glue_main.py  
-│       ├── jobs/  
-│       │   ├── raw_ingestion.py  
-│       │   ├── enrich_models.py  
-│       │   ├── enrich_datasets.py  
-│       │   └── curate_gold.py  
-│       ├── services/  
-│       │   ├── hf_client.py  
-│       │   ├── model_enrichment.py  
-│       │   └── dataset_enrichment.py  
-│       └── utils/  
-│           ├── io.py  
-│           ├── retry.py  
-│           └── schema.py  
-├── tests/  
-│   ├── unit/  
-│   ├── integration/  
-│   └── fixtures/  
-└── terraform/               <-- Infrastructure as Code
+final/
+├── README.md
+├── CLAUDE.md
+├── Makefile                          ← Task orchestration (tests, deploys)
+├── makefiles/
+│   ├── tests.mk                      ← Terraform module tests (parallel)
+│   └── deploys.mk                    ← Terraform plan/apply/destroy targets
+├── pyproject.toml
+├── requirements.txt
+├── requirements-dev.txt
+├── src/
+│   ├── domain/
+│   │   ├── shared/
+│   │   │   └── models/
+│   │   │       └── serializable_model.py
+│   │   └── data_preparation/
+│   │       ├── models/preparation/   ← boundary, manifest, partition, metadata models
+│   │       ├── models/s3/            ← bucket URI model
+│   │       ├── persistence/          ← DataPreparationRepository interface
+│   │       ├── services/             ← service interfaces (config, dates, metadata, s3, step functions)
+│   │       └── use_cases/            ← DataPreparationConfigUseCase interface
+│   ├── application/
+│   │   └── data_preparation/
+│   │       ├── services/             ← service implementations
+│   │       └── use_cases/            ← DataPreparationConfigUseCaseImplemented
+│   └── infrastructure/
+│       ├── in/
+│       │   ├── lambda/
+│       │   │   ├── data_preparation_job.py        ← Lambda handler (entrypoint)
+│       │   │   └── config/injection/
+│       │   │       └── dependency_injector.py     ← wires all dependencies at module load
+│       │   └── glue/
+│       │       ├── raw_ingestion.py
+│       │       ├── discovery.py
+│       │       └── gold_consolidation.py
+│       └── out/
+│           ├── dynamo/               ← DynamoDB client, mappers, repository, type conversion
+│           ├── s3/                   ← S3 client, writer
+│           ├── hugging_face/         ← HuggingFace API client
+│           └── secrets_config/       ← HF token resolver via Secrets Manager
+├── tests/
+│   ├── application/data_preparation/services/
+│   │   ├── config/boundaries/
+│   │   ├── config/environment/
+│   │   ├── config/lambda_function/
+│   │   ├── config/partitions/
+│   │   ├── dates/
+│   │   ├── metadata/ai_metadata_models/
+│   │   └── s3/
+│   ├── domain/shared/models/
+│   └── infrastructure/
+│       ├── in/glue/
+│       └── out/dynamo/
+└── iac/
     ├── environments/
-    │   └── dev/             <-- Development environment deployment
-    │       ├── main.tf
-    │       ├── outputs.tf
-    │       ├── providers.tf
-    │       ├── terraform.tfvars
-    │       └── variables.tf
+    │   └── dev/                      ← dev environment instantiating all modules
     └── modules/
-        └── s3_etl/          <-- Reusable S3 infrastructure module
-            ├── main.tf
-            ├── outputs.tf
-            ├── variables.tf
-            ├── versions.tf
-            └── tests/       <-- Native Terraform tests
-                └── bucket.tftest.hcl
+        ├── lambda/                   ← packages src/ and deploys the Lambda
+        ├── dynamo-db/
+        ├── glue-job/
+        ├── glue-discovery/
+        ├── glue_enrichment/
+        ├── s3_etl/
+        ├── secrets/
+        ├── kms/
+        ├── security_base/
+        ├── security_policies/
+        └── workflow/
 ```
+
+## Lambda: Data Preparation Job
+
+The Lambda function at `src/infrastructure/in/lambda/data_preparation_job.py` is the pipeline entry point. It is a **thin handler** that delegates entirely to the use case:
+
+```python
+def handler(_event, _context):
+    return data_preparation_config_use_case.create_configuration_for_etl()
+```
+
+All dependencies are resolved at module load time in `config/injection/dependency_injector.py` via explicit constructor injection — no service locator or global state.
+
+### Handler path (Terraform)
+
+```
+infrastructure/in/lambda/data_preparation_job.handler
+```
+
+### Environment variables
+
+| Variable             | Description                                   |
+|----------------------|-----------------------------------------------|
+| `RAW_BUCKET_NAME`    | S3 bucket holding raw and processed data      |
+| `ENVIRONMENT`        | Deployment environment (e.g. `dev`)           |
+| `CONTROL_TABLE_NAME` | DynamoDB table name for enrichment control    |
+| `CONTROL_TABLE_ARN`  | DynamoDB table ARN for enrichment control     |
 
 ## Infrastructure as Code (IaC)
 
-The cloud infrastructure is provisioned using a clean, modular **Terraform** architecture. 
+The cloud infrastructure is provisioned using a clean, modular **Terraform** architecture located in `iac/`.
 
-- **Modules:** Reusable components (e.g., `s3_etl`) containing the exact specifications for AWS resources.
-- **Environments:** Environment-specific configurations (e.g., `dev`, `prod`) that instantiate modules using `.tfvars` to inject correct naming conventions and variables.
-- **Orchestration:** A root-level `Makefile` abstracts Terraform commands, ensuring consistent execution across tests and deployments.
+- **Modules:** Reusable components (e.g., `lambda`, `dynamo-db`, `s3_etl`) containing the exact specifications for AWS resources.
+- **Environments:** Environment-specific configurations (e.g., `dev`) that instantiate modules using `.tfvars` to inject correct naming conventions and variables.
+- **Orchestration:** The root-level `Makefile` abstracts Terraform commands, ensuring consistent execution across tests and deployments.
+
+The Lambda module packages the entire `src/` directory as the deployment artifact.
 
 ## Workflow
 
-### 1. Raw Ingestion
+### 1. Data Preparation (Lambda)
+The Lambda is invoked (e.g. by a scheduler or Step Functions) to compute the ETL configuration: date boundaries, partition descriptors, and the input manifest. The output is passed to Step Functions.
+
+### 2. Raw Ingestion (Glue)
 Extract a raw snapshot of Hugging Face models and persist it to S3.
 
-### 2. Model Enrichment
+### 3. Model Discovery (Glue)
 Process model IDs incrementally and enrich them with model-level metadata.
 
-### 3. Dataset Enrichment
-Extract unique dataset references and enrich them separately to avoid redundant API calls.
-
-### 4. Final Consolidation
+### 4. Gold Consolidation (Glue)
 Join Silver Models and Silver Datasets, apply schema normalization, and publish the Gold dataset.
 
 ## Fault Tolerance Strategy
 
 The pipeline includes:
-- checkpointing for long-running enrichment jobs
-- retry with exponential backoff for API rate limits
-- persistence of failed records for later reprocessing
-- incremental execution based on processed entities
-- idempotent writes where possible
+- Checkpointing for long-running enrichment jobs
+- Retry with exponential backoff for API rate limits
+- Persistence of failed records for later reprocessing
+- Incremental execution based on processed entities tracked in DynamoDB
+- Idempotent writes where possible
 
 ## Cloud Deployment
 
-Recommended AWS services:
-- AWS Glue for ETL execution
-- Amazon S3 for Bronze, Silver, and Gold storage
-- AWS Glue Data Catalog for metadata management
-- Amazon Athena for querying the curated dataset
-- AWS Secrets Manager for Hugging Face token management
-- Amazon CloudWatch for logs and monitoring
-- AWS Step Functions or Glue Workflows for orchestration
-
-## Entry Point
-
-A single Glue entry point can dispatch specific jobs by argument:
-
-```json
-JOB_MAP = {  
-    "raw_ingestion": run_raw_ingestion,  
-    "enrich_models": run_enrich_models,  
-    "enrich_datasets": run_enrich_datasets,  
-    "curate_gold": run_curate_gold,  
-}
-```
-
-Example Glue argument:
-`--job_name enrich_models`
+AWS services used:
+- **AWS Lambda** — data preparation config computation
+- **AWS Step Functions** — pipeline orchestration
+- **AWS Glue** — ETL execution (raw ingestion, enrichment, consolidation)
+- **Amazon S3** — Bronze, Silver, and Gold storage
+- **Amazon DynamoDB** — enrichment control table (partition state tracking)
+- **AWS Secrets Manager** — Hugging Face token management
+- **AWS KMS** — encryption key management
+- **Amazon CloudWatch** — logs and monitoring
 
 ## Testing Strategy
 
 This project includes tests for both application logic and infrastructure.
 
-### Python Unit & Integration Tests
-Focused on logic such as dataset extraction, model size computation, CO2 metadata parsing, and local execution over sample parquet files.
-- Suggested tooling: `pytest`, `pytest-mock`, `coverage`, `ruff`, `black`
+### Python Unit Tests
+
+Tests are organized to mirror the source tree and cover:
+- Boundary calculation logic
+- Environment variable resolution
+- Lambda configuration validation
+- Partition descriptor computation
+- Date parsing
+- AI model metadata parsing and service
+- S3 URI parsing and S3 service
+- DynamoDB mapper, repository, and type conversion
+
+Run with:
+```bash
+pytest
+```
+
+Coverage is reported automatically (configured in `pyproject.toml`).
 
 ### Infrastructure Tests (IaC)
+
 Native Terraform unit tests (`.tftest.hcl`) validate module configurations and resource properties in memory (via `terraform plan`) before any real resources are provisioned on AWS.
+
+Run all module tests in parallel:
+```bash
+make test
+```
+
+Run a specific module:
+```bash
+make test mod=lambda
+```
 
 ## Local Development
 
 ### Python Setup
-Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-Run Python linting:
+Run linting:
 ```bash
 ruff check .
 black --check .
 ```
 
-### Running Tests (Python & IaC)
-The Makefile orchestrates all infrastructure tests automatically:
+Run type checking:
 ```bash
-# Run Terraform unit tests across all modules
+mypy src/
+```
+
+### Running Tests (Python & IaC)
+
+```bash
+# Run Python unit tests with coverage
+pytest
+
+# Run Terraform unit tests across all modules (parallel)
 make test
 
-# Run Python tests
-pytest
+# Run Terraform tests for a single module
+make test mod=lambda
 ```
 
 ### Deploying Infrastructure
-Use the Makefile to plan and deploy environments securely:
+
 ```bash
-# Preview changes for the Dev environment
+# Preview changes for the dev environment
 make plan-dev
 
-# Deploy infrastructure to the Dev environment
+# Deploy all infrastructure to dev
 make deploy-dev
 
-# Destroy Dev infrastructure (Use with caution)
+# Deploy only the Lambda (fast path for code changes)
+make deploy-lambda-dev
+
+# Destroy dev infrastructure
 make destroy-dev
 ```
+
+> **Note:** Deployment requires a `.env` file at the project root exporting `HF_TOKEN`.
 
 ## Future Improvements
 
@@ -290,11 +380,11 @@ make destroy-dev
 
 ## Use Cases
 
-- sustainability analysis of open ML models
-- correlation analysis between CO2 emissions and model size
-- study of dataset usage patterns across models
-- benchmarking metadata availability and reporting quality
-- analytical consumption through Athena or dashboards
+- Sustainability analysis of open ML models
+- Correlation analysis between CO2 emissions and model size
+- Study of dataset usage patterns across models
+- Benchmarking metadata availability and reporting quality
+- Analytical consumption through Athena or dashboards
 
 ## License
 
