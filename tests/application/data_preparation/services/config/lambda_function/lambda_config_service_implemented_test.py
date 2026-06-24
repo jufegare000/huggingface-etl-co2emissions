@@ -119,7 +119,6 @@ def mock_config_enum_params():
 def test_load_input_manifest_executes_validation(
     service, mock_lambda_config_validator, mock_config_enum_params
 ):
-    event = {}
     with patch(PATCH_ENV_SERVICE) as mock_env:
         mock_env.load_env_variable.side_effect = lambda var: (
             VAL_MOCK_BUCKET
@@ -127,7 +126,7 @@ def test_load_input_manifest_executes_validation(
             else (VAL_MOCK_TABLE if var == ENV_CONTROL_TABLE_NAME else None)
         )
 
-        result = service.load_input_manifest(event)
+        result = service.load_input_manifest()
 
         assert isinstance(result, InputManifest)
         mock_lambda_config_validator.validate_input.assert_called_once_with(
@@ -138,7 +137,6 @@ def test_load_input_manifest_executes_validation(
 def test_create_manifest_structure_with_fallback_defaults(
     service, mock_config_enum_params
 ):
-    event = {}
     with patch(PATCH_ENV_SERVICE) as mock_env:
         mock_env.load_env_variable.side_effect = lambda var: (
             VAL_MOCK_BUCKET
@@ -146,7 +144,7 @@ def test_create_manifest_structure_with_fallback_defaults(
             else (VAL_MOCK_TABLE if var == ENV_CONTROL_TABLE_NAME else None)
         )
 
-        manifest = service.create_manifest_structure(event)
+        manifest = service.create_manifest_structure()
 
         assert manifest.run_id == VAL_MOCK_COMPACT_NOW
         assert manifest.source_csv_path == EXPECTED_DEFAULT_S3_PATH
@@ -160,51 +158,17 @@ def test_create_manifest_structure_with_fallback_defaults(
         assert manifest.calls_per_model == INT_DEFAULT_CALLS_PER_MODEL
 
 
-def test_create_manifest_structure_with_explicit_event_payload(
-    service, mock_config_enum_params
-):
-    event = {
-        KEY_RUN_ID: VAL_CUSTOM_RUN_ID,
-        KEY_SOURCE_CSV_PATH: VAL_CUSTOM_SOURCE_PATH,
-        KEY_WORKERS: VAL_CUSTOM_WORKERS_STR,
-        KEY_THREADS_PER_WORKER: VAL_CUSTOM_THREADS_STR,
-        KEY_PREPARED_PREFIX: VAL_CUSTOM_PREPARED_PREFIX,
-        KEY_GLOBAL_RATE_LIMIT: VAL_CUSTOM_GLOBAL_LIMIT_STR,
-        KEY_WINDOW_SECONDS: VAL_CUSTOM_WINDOW_STR,
-        KEY_CALLS_PER_MODEL: VAL_CUSTOM_CALLS_STR,
-    }
-    with patch(PATCH_ENV_SERVICE) as mock_env:
-        mock_env.load_env_variable.side_effect = lambda var: (
-            VAL_MOCK_BUCKET
-            if var == ENV_RAW_BUCKET_NAME
-            else (VAL_MOCK_TABLE if var == ENV_CONTROL_TABLE_NAME else None)
-        )
-
-        manifest = service.create_manifest_structure(event)
-
-        assert manifest.run_id == VAL_CUSTOM_RUN_ID
-        assert manifest.source_csv_path == VAL_CUSTOM_SOURCE_PATH
-        assert manifest.workers == INT_CUSTOM_WORKERS
-        assert manifest.threads_per_worker == INT_CUSTOM_THREADS
-        assert manifest.bucket_name == VAL_MOCK_BUCKET
-        assert manifest.control_table_name == VAL_MOCK_TABLE
-        assert manifest.prepared_prefix == VAL_CUSTOM_PREPARED_PREFIX
-        assert manifest.global_rate_limit == INT_CUSTOM_GLOBAL_LIMIT
-        assert manifest.window_seconds == INT_CUSTOM_WINDOW
-        assert manifest.calls_per_model == INT_CUSTOM_CALLS
-
 
 def test_create_manifest_structure_missing_table_name_raises_value_error(
     service,
 ):
-    event = {}
     with patch(PATCH_ENV_SERVICE) as mock_env:
         mock_env.load_env_variable.side_effect = lambda var: (
             VAL_MOCK_BUCKET if var == ENV_RAW_BUCKET_NAME else None
         )
 
         with pytest.raises(ValueError) as exc_info:
-            service.create_manifest_structure(event)
+            service.create_manifest_structure()
 
         assert str(exc_info.value) == ERROR_CONTROL_TABLE_REQUIRED
 
@@ -212,7 +176,6 @@ def test_create_manifest_structure_missing_table_name_raises_value_error(
 def test_create_manifest_structure_empty_bucket_name_fallback(
     service, mock_config_enum_params
 ):
-    event = {}
     with patch(PATCH_ENV_SERVICE) as mock_env:
         mock_env.load_env_variable.side_effect = lambda var: (
             None
@@ -220,6 +183,6 @@ def test_create_manifest_structure_empty_bucket_name_fallback(
             else (VAL_MOCK_TABLE if var == ENV_CONTROL_TABLE_NAME else None)
         )
 
-        manifest = service.create_manifest_structure(event)
+        manifest = service.create_manifest_structure()
 
         assert manifest.bucket_name == EMPTY_STRING

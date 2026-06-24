@@ -4,11 +4,23 @@ from application.data_preparation.services.config.lambda_function.lambda_config_
     LambdaConfigServiceImplemented
 from application.data_preparation.services.config.lambda_function.lambda_config_validator_service_implemented import \
     LambdaConfigValidatorServiceImplemented
+from application.data_preparation.services.config.manifests.data_manifest_builder_service_implemented import \
+    DataManifestBuilderServiceImplemented
 
 from application.data_preparation.services.config.partitions.partition_descriptor_service_implemented import \
     PartitionDescriptorServiceImplemented
 from application.data_preparation.services.dates.date_parsing_service_implemented import \
     SystemDateTimeServiceImplemented
+from application.data_preparation.services.partitions.partitions_service_implemented import PartitionsServiceImplemented
+from application.data_preparation.services.step_functions.step_functions_service_implemented import StepFunctionsServiceImplemented
+from application.data_preparation.use_cases.data_preparation.data_preparation_config_use_case_implemented import \
+    DataPreparationConfigUseCaseImplemented
+from domain.data_preparation.services.config.manifests.data_manifest_builder_service import DataManifestBuilderService
+from domain.data_preparation.services.step_functions.step_functions_service import StepFunctionsService
+from domain.data_preparation.services.partitions.partitions_service import PartitionsService
+from domain.data_preparation.use_cases.data_preparation.data_preparation_config_use_case import \
+    DataPreparationConfigUseCase
+
 from infrastructure.out.dynamo.services.impl.dynamodb_conversion_service_implemented import \
     DynamoDBTypeConversionServiceImplemented
 from application.data_preparation.services.metadata.ai_metadata_models.ai_models_metadata_parser_service_implemented import \
@@ -62,3 +74,18 @@ dynamo_db_data_preparation_mapper: DynamoDBDataPreparationMapper = DynamoDBDataP
     data_parsing_service)
 data_preparation_repository: DataPreparationRepository = DynamoDBDataPreparationRepository(
     dynamo_db_data_preparation_mapper, type_conversion_service)
+
+data_manifest_builder: DataManifestBuilderService = DataManifestBuilderServiceImplemented(data_parsing_service)
+
+step_functions_service: StepFunctionsService = StepFunctionsServiceImplemented()
+
+partition_service: PartitionsService = PartitionsServiceImplemented(lambda_config_service,
+                                                                    models_metadata_service,
+                                                                    boundaries_calculation_service,
+                                                                    partition_descriptor_service,
+                                                                    data_manifest_builder,
+                                                                    s3_service,
+                                                                    data_preparation_repository,)
+
+data_preparation_config_use_case: DataPreparationConfigUseCase = DataPreparationConfigUseCaseImplemented(partition_service, step_functions_service)
+
