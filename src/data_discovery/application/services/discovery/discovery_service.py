@@ -402,7 +402,7 @@ class DiscoveryJobService():
 
 
 
-    def retry_after_to_seconds(value: Optional[str]) -> int:
+    def retry_after_to_seconds(self, value: Optional[str]) -> int:
         if not value:
             return DiscoveryJobConstantsEnum.DEFAULT_429_SLEEP_SECONDS
 
@@ -725,3 +725,7 @@ class DiscoveryJobService():
             }, ensure_ascii=False))
 
             raise
+
+
+def run_discovery() -> Dict[str, Any]:
+    return DiscoveryJobService().run_discovery()

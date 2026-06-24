@@ -1,9 +1,4 @@
-import os
-from enum import Enum
-
-
-class DiscoveryJobConstantsEnum(Enum):
-
+class DiscoveryJobConstantsEnum:
 
     BASE_PREFIX = "discovery/hf-carbon"
     CHECKPOINT_KEY = f"{BASE_PREFIX}/checkpoints/latest.json"
