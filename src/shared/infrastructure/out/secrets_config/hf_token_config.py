@@ -20,7 +20,7 @@ class HFTokenClass:
         response = client.get_secret_value(SecretId=secret_name)
 
         if "SecretString" not in response:
-            raise ValueError("SecretString not found in secret response")
+            raise ValueError("SecretString not found into secret response")
 
         return response["SecretString"]
 

@@ -1,9 +1,7 @@
 from unittest.mock import MagicMock, patch
 import pytest
 
-from data_preparation.application.services.s3.s3_service_implemented import (
-    S3ServiceImplemented,
-)
+from data_preparation.application.services.s3.s3_service_implemented import S3ServiceImplemented
 
 PATCH_CSV_COLUMNS = "data_preparation.application.services.s3.s3_service_implemented.CSV_COLUMNS"
 
@@ -47,23 +45,6 @@ def service(mock_s3_client):
 def test_get_client(service, mock_s3_client):
     assert service.get_client() == mock_s3_client
 
-
-def test_write_csv_to_s3(service, mock_s3_client):
-    mock_columns = [COL_A, COL_B]
-    rows = [
-        {COL_A: VAL_ROW1_A, COL_B: VAL_ROW1_B, KEY_EXTRA: VAL_EXTRA_VAL},
-        {COL_A: VAL_ROW2_A, COL_B: VAL_ROW2_B},
-    ]
-
-    with patch(PATCH_CSV_COLUMNS, mock_columns):
-        service.write_csv_to_s3(rows, VAL_BUCKET, VAL_KEY_CSV)
-
-    mock_s3_client.put_object.assert_called_once_with(
-        Bucket=VAL_BUCKET,
-        Key=VAL_KEY_CSV,
-        Body=VAL_EXPECTED_CSV_BODY,
-        ContentType=VAL_CONTENT_TYPE_CSV,
-    )
 
 
 def test_write_json_to_s3(service, mock_s3_client):

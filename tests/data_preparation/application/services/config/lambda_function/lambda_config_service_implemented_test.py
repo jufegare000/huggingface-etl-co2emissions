@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import cast
 from unittest.mock import MagicMock, patch
 import pytest
 
@@ -6,7 +6,7 @@ from data_preparation.domain.models.preparation.input_manifest import InputManif
 from data_preparation.application.services.config.lambda_function.data_preparation_enum import (
     DataPreparationConfigParams,
 )
-from data_preparation.domain.services.date_parsing_service import DataParsingService
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 from data_preparation.domain.services.config.lambda_function.lambda_config_validator_service import (
     LambdaConfigValidatorService,
 )

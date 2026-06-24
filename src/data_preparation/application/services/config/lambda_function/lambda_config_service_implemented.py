@@ -6,7 +6,7 @@ from data_preparation.domain.models.preparation.input_manifest import InputManif
 from data_preparation.domain.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from data_preparation.domain.services.config.lambda_function.lambda_config_validator_service import \
     LambdaConfigValidatorService
-from data_preparation.domain.services.date_parsing_service import DataParsingService
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 
 env_service = EnvironmentVariablesService()
 

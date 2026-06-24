@@ -4,7 +4,6 @@ import json
 import logging
 import re
 import time
-from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, urlparse
 
@@ -16,6 +15,7 @@ from data_preparation.application.services.config.environment.env_variables_serv
     EnvironmentVariablesService
 from data_discovery.application.services.discovery.discovery_job_constants_enum import DiscoveryJobConstantsEnum
 from shared.domain.exceptions.rate_limit_error import RateLimitError
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 
 env_service = EnvironmentVariablesService()
 logger = logging.getLogger(__name__)
@@ -23,41 +23,13 @@ logger = logging.getLogger(__name__)
 
 class DiscoveryJobService():
 
-    CSV_COLUMNS = [
-        "model_id",
-        "co2_eq_emissions",
-        "co2_source",
-        "training_type",
-        "geographical_location",
-        "hardware_used",
-        "created_at",
-        "downloads",
-        "likes",
-        "library_name",
-        "pipeline_tag",
-        "tags",
-        "snapshot_id",
-        "discovered_at",
-    ]
+    def __init__(self, date_parsing_service: DataParsingService):
+        self.date_parsing_service = date_parsing_service
 
     s3 = boto3.client("s3")
     secrets_client = boto3.client("secretsmanager")
 
 
-    # =============================================================================
-    # Time helpers
-    # =============================================================================
-
-    def utc_now(self) -> datetime:
-        return datetime.now(timezone.utc)
-
-
-    def utc_now_iso(self) -> str:
-        return self.utc_now().isoformat()
-
-
-    def utc_now_compact(self) -> str:
-        return self.utc_now().strftime("%Y%m%dT%H%M%SZ")
 
 
     # =============================================================================
@@ -436,7 +408,7 @@ class DiscoveryJobService():
             }, ensure_ascii=False))
             return existing
 
-        snapshot_id = self.utc_now_compact()
+        snapshot_id = self.date_parsing_service.utc_now_compact()
 
         checkpoint = {
             "snapshot_id": snapshot_id,
@@ -446,8 +418,8 @@ class DiscoveryJobService():
             "total_models_seen": 0,
             "models_with_emissions": 0,
             "part_number": 0,
-            "started_at": self.utc_now_iso(),
-            "updated_at": self.utc_now_iso(),
+            "started_at": self.date_parsing_service.utc_now_iso(),
+            "updated_at": self.date_parsing_service.utc_now_iso(),
         }
 
         self.save_checkpoint(checkpoint)
@@ -461,7 +433,7 @@ class DiscoveryJobService():
 
 
     def save_checkpoint(self, checkpoint: Dict[str, Any]) -> None:
-        checkpoint["updated_at"] = self.utc_now_iso()
+        checkpoint["updated_at"] = self.date_parsing_service.utc_now_iso()
 
         self.upload_json_to_s3(checkpoint, self.get_target_bucket(), DiscoveryJobConstantsEnum.CHECKPOINT_KEY)
 
@@ -492,7 +464,7 @@ class DiscoveryJobService():
         checkpoint = self.load_or_create_checkpoint()
 
         snapshot_id = checkpoint["snapshot_id"]
-        discovered_at = checkpoint.get("started_at") or self.utc_now_iso()
+        discovered_at = checkpoint.get("started_at") or self.date_parsing_service.utc_now_iso()
 
         next_cursor = checkpoint.get("next_cursor")
         page_number = int(checkpoint.get("last_successful_page") or 0)
@@ -555,7 +527,7 @@ class DiscoveryJobService():
                             "models_with_emissions": models_with_emissions,
                             "page_number": page_number,
                             "cursor_saved": bool(next_cursor),
-                            "event_at": self.utc_now_iso(),
+                            "event_at": self.date_parsing_service.utc_now_iso(),
                         },
                     )
 
@@ -670,7 +642,7 @@ class DiscoveryJobService():
                 "models_with_emissions": models_with_emissions,
                 "final_rows_count": final_rows_count,
                 "part_number": part_number,
-                "completed_at": self.utc_now_iso(),
+                "completed_at": self.date_parsing_service.utc_now_iso(),
             }
 
             checkpoint["status"] = "COMPLETED"
@@ -700,7 +672,7 @@ class DiscoveryJobService():
             checkpoint["total_models_seen"] = total_models_seen
             checkpoint["models_with_emissions"] = models_with_emissions
             checkpoint["last_error"] = str(exc)
-            checkpoint["failed_at"] = self.utc_now_iso()
+            checkpoint["failed_at"] = self.date_parsing_service.utc_now_iso()
             self.save_checkpoint(checkpoint)
 
             self.save_progress_event(
@@ -714,7 +686,7 @@ class DiscoveryJobService():
                     "models_with_emissions": models_with_emissions,
                     "page_number": page_number,
                     "next_cursor_saved": bool(next_cursor),
-                    "failed_at": self.utc_now_iso(),
+                    "failed_at": self.date_parsing_service.utc_now_iso(),
                 },
             )
 

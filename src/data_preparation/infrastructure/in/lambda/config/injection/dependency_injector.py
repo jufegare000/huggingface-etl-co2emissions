@@ -9,7 +9,7 @@ from data_preparation.application.services.config.manifests.data_manifest_builde
 
 from data_preparation.application.services.config.partitions.partition_descriptor_service_implemented import \
     PartitionDescriptorServiceImplemented
-from data_preparation.application.services.dates.date_parsing_service_implemented import \
+from shared.application.services.date_parsing.date_parsing_service_implemented import \
     SystemDateTimeServiceImplemented
 from data_preparation.application.services.partitions.partitions_service_implemented import PartitionsServiceImplemented
 from data_preparation.application.services.step_functions.step_functions_service_implemented import StepFunctionsServiceImplemented
@@ -38,7 +38,7 @@ from data_preparation.domain.services.config.lambda_function.lambda_config_valid
 from data_preparation.domain.services.config.boundaries.boundaries_calculation_service import \
     BoundariesCalculationService
 from data_preparation.domain.services.config.partitions.partition_descriptor_service import PartitionDescriptorService
-from data_preparation.domain.services.date_parsing_service import DataParsingService
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService

@@ -1,0 +1,7 @@
+from data_discovery.application.services.discovery.discovery_service import DiscoveryJobService
+from shared.application.services.date_parsing.date_parsing_service_implemented import SystemDateTimeServiceImplemented
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
+
+date_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
+
+discovery_job_service: DiscoveryJobService = DiscoveryJobService(date_parsing_service)
