@@ -1,9 +1,10 @@
-from pathlib import Path
 import sys
+from typing import Any
+
+from black import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from typing import Any
 from config.injection.dependency_injector import data_preparation_config_use_case
 
 
