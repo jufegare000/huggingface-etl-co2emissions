@@ -4,5 +4,5 @@ from domain.data_preparation.models.preparation.input_manifest import InputManif
 
 class LambdaConfigService(Protocol):
 
-    def load_input_manifest(self, event: dict[str, Any]) -> InputManifest:
+    def load_input_manifest(self) -> InputManifest:
         ...

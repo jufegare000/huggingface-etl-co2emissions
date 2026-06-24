@@ -119,3 +119,9 @@ iac/environments/dev/tfplan
 .terraform.tfstate.lock.info
 crash.log
 crash.*.log
+
+.terraformrc
+.terraform-mirror/
+.terraform/
+*.tfstate
+*.tfstate.backup
