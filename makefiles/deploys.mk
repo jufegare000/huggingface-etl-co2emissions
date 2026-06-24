@@ -1,4 +1,4 @@
-.PHONY: init-dev validate-dev plan-dev deploy-dev destroy-dev deploy-lambda-dev build-glue-libs deploy-glue-dev deploy-security-dev deploy-security-base-dev
+.PHONY: init-dev validate-dev plan-dev deploy-dev destroy-dev deploy-lambda-dev build-glue-libs deploy-glue-dev deploy-security-dev deploy-security-base-dev update-hf-token update-hf-token-sm
 
 include .env
 export
@@ -43,6 +43,14 @@ build-glue-libs:
 		--exclude "*__pycache__*" \
 		--exclude "*.pyc" \
 		--exclude "*.egg-info*"
+
+update-hf-token-sm:
+	@test -n "$(HF_TOKEN)" || (echo "HF_TOKEN not set in .env" && exit 1)
+	cd iac/environments/dev && terraform init && \
+	TF_VAR_hf_token="$(HF_TOKEN)" terraform apply \
+		-target=module.hf_secrets.aws_secretsmanager_secret_version.this \
+		-auto-approve
+	@echo "HF_TOKEN updated in Secrets Manager via Terraform"
 
 deploy-glue-dev: build-glue-libs validate-dev
 	cd iac/environments/dev && TF_VAR_hf_token="$$HF_TOKEN" terraform plan \
