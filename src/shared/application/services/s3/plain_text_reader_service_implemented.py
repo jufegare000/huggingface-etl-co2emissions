@@ -2,7 +2,7 @@ import csv
 import io
 from typing import Any
 from data_preparation.domain.models.s3.bucket_uri import BucketURI
-from shared.domain.plain_texts.plain_text_reader_service import PlainTextReaderService
+from shared.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
 from data_preparation.domain.services.s3.s3_parser_service import S3ParserService
 from shared.domain.services.s3.s3_reader_service import S3ReaderService
 from shared.domain.services.s3.s3_writer_service import S3WriterService

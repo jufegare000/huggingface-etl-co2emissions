@@ -1,8 +1,6 @@
 from botocore.client import BaseClient
 from typing import Any
 
-from botocore.exceptions import ClientError
-
 import boto3
 import io
 import csv
@@ -39,3 +37,12 @@ class S3WriterServiceImplemented(S3WriterService):
             Body=json.dumps(payload, ensure_ascii=False, indent=2, default=str).encode("utf-8"),
             ContentType="application/json",
         )
+
+    def upload_text_to_s3(self, text: str, bucket: str, key: str, content_type: str = "text/plain") -> None:
+        self.get_client().put_object(
+            Bucket=bucket,
+            Key=key,
+            Body=text.encode("utf-8"),
+            ContentType=content_type,
+        )
+

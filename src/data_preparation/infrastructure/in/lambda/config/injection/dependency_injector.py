@@ -38,7 +38,7 @@ from data_preparation.domain.services.config.lambda_function.lambda_config_valid
 from data_preparation.domain.services.config.boundaries.boundaries_calculation_service import \
     BoundariesCalculationService
 from data_preparation.domain.services.config.partitions.partition_descriptor_service import PartitionDescriptorService
-from shared.domain.plain_texts.plain_text_reader_service import PlainTextReaderService
+from shared.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
 from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
@@ -51,7 +51,6 @@ from data_preparation.infrastructure.out.dynamo.services.type_conversion_service
 from data_preparation.domain.persistence.data_preparation_repository import DataPreparationRepository
 from data_preparation.domain.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from data_preparation.infrastructure.out.dynamo.repository.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
-from shared.domain.services.s3.s3_reader_service import S3ReaderService
 from shared.domain.services.s3.s3_writer_service import S3WriterService
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()

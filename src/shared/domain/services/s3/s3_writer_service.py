@@ -10,5 +10,8 @@ class S3WriterService(Protocol):
     def write_json_to_s3(self, payload: dict[str, Any], bucket: str, key: str) -> None:
         ...
 
+    def upload_text_to_s3(self, text: str, bucket: str, key: str, content_type: str = "text/plain") -> None:
+        ...
+
 
 

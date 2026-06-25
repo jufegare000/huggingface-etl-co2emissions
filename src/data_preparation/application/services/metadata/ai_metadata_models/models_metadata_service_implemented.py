@@ -3,7 +3,7 @@ from data_preparation.domain.models.preparation.model_metadata import ModelMetad
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
-from shared.domain.plain_texts import PlainTextReaderService
+from shared.domain.services.plain_texts import PlainTextReaderService
 
 
 class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
