@@ -3,7 +3,7 @@ from data_preparation.domain.models.preparation.model_metadata import ModelMetad
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
-from data_preparation.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
+from shared.domain.services.plain_texts import PlainTextReaderService
 
 
 class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
@@ -13,8 +13,8 @@ class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
         self.plain_text_reader = plain_text_reader
         self.ai_models_metadat_parser_service = ai_models_metadata_parser_service
 
-    def load_models_metadata(self, config: InputManifest) -> list[ModelMetadata]:
-        rows = self.plain_text_reader.read_csv_from_s3(config.source_csv_path)
+    def load_models_metadata(self, input_manifest: InputManifest) -> list[ModelMetadata]:
+        rows = self.plain_text_reader.read_csv_from_s3(input_manifest.source_csv_path)
 
         models_by_id: dict[str, ModelMetadata] = {}
 
@@ -48,6 +48,6 @@ class AIAIModelsMetadataServiceImplemented(AIModelsMetadataService):
         )
 
         if not models:
-            raise ValueError("No valid ai_metadata_models found in source CSV")
+            raise ValueError("No valid ai_metadata_models found into source CSV")
 
         return models

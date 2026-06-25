@@ -9,7 +9,7 @@ from data_preparation.application.services.config.manifests.data_manifest_builde
 
 from data_preparation.application.services.config.partitions.partition_descriptor_service_implemented import \
     PartitionDescriptorServiceImplemented
-from data_preparation.application.services.dates.date_parsing_service_implemented import \
+from shared.application.services.date_parsing.date_parsing_service_implemented import \
     SystemDateTimeServiceImplemented
 from data_preparation.application.services.partitions.partitions_service_implemented import PartitionsServiceImplemented
 from data_preparation.application.services.step_functions.step_functions_service_implemented import StepFunctionsServiceImplemented
@@ -27,49 +27,50 @@ from data_preparation.application.services.metadata.ai_metadata_models.ai_models
     AIModelsMetadataParserServiceImplemented
 from data_preparation.application.services.metadata.ai_metadata_models.models_metadata_service_implemented import \
     AIAIModelsMetadataServiceImplemented
-from data_preparation.application.services.s3.plain_text_reader_service_implemented import \
-    PlainTextReaderServiceImplemented
-from data_preparation.application.services.s3.s3_parser_service_implemented import S3ParserServiceImplemented
+from shared.application.services.s3.plain_text_reader_service_implemented import PlainTextReaderServiceImplemented
+from shared.application.services.s3.s3_parser_service_implemented import S3ParserServiceImplemented
+from shared.application.services.s3.s3_reader_service_implemented import S3ReaderServiceImplemented
 
-from data_preparation.application.services.s3.s3_service_implemented import S3ServiceImplemented
+from shared.application.services.s3.s3_writer_service_implemented import S3WriterServiceImplemented
 
 from data_preparation.domain.services.config.lambda_function.lambda_config_validator_service import \
     LambdaConfigValidatorService
 from data_preparation.domain.services.config.boundaries.boundaries_calculation_service import \
     BoundariesCalculationService
 from data_preparation.domain.services.config.partitions.partition_descriptor_service import PartitionDescriptorService
-from data_preparation.domain.services.date_parsing_service import DataParsingService
+from shared.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_parser_service import \
     AIModelsMetadataParserService
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
-from data_preparation.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
 from data_preparation.domain.services.s3.s3_parser_service import S3ParserService
 from data_preparation.infrastructure.out.dynamo.mappers.dynamo_db_data_preparation_mapper import DynamoDBDataPreparationMapper
 from data_preparation.infrastructure.out.dynamo.mappers.impl.dynamo_db_data_preparation_mapper_implemented import \
     DynamoDBDataPreparationMapperImplemented
 from data_preparation.infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
-from data_preparation.domain.services.s3.s3_service import S3Service
 from data_preparation.domain.persistence.data_preparation_repository import DataPreparationRepository
 from data_preparation.domain.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from data_preparation.infrastructure.out.dynamo.repository.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
+from shared.domain.services.s3.s3_writer_service import S3WriterService
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
 s3_uri_service: S3ParserService = S3ParserServiceImplemented()
-s3_service: S3Service = S3ServiceImplemented()
+s3_writer_service: S3WriterService = S3WriterServiceImplemented()
+s3_reader_service: S3WriterService = S3ReaderServiceImplemented()
 
 lambda_config_validation_service: LambdaConfigValidatorService = LambdaConfigValidatorServiceImplemented(s3_uri_service)
 lambda_config_service: LambdaConfigService = LambdaConfigServiceImplemented(data_parsing_service,
                                                                             lambda_config_validation_service)
 
-plain_text_reader: PlainTextReaderService = PlainTextReaderServiceImplemented(s3_uri_service, s3_service)
+plain_text_reader: PlainTextReaderService = PlainTextReaderServiceImplemented(s3_uri_service, s3_writer_service, s3_reader_service)
 ai_models_metadat_parser_service: AIModelsMetadataParserService = AIModelsMetadataParserServiceImplemented()
 models_metadata_service: AIModelsMetadataService = AIAIModelsMetadataServiceImplemented(
     plain_text_reader,
     ai_models_metadat_parser_service
 )
 boundaries_calculation_service: BoundariesCalculationService = BoundariesCalculationServiceImplemented()
-partition_descriptor_service: PartitionDescriptorService = PartitionDescriptorServiceImplemented(s3_service)
+partition_descriptor_service: PartitionDescriptorService = PartitionDescriptorServiceImplemented(s3_writer_service)
 dynamo_db_data_preparation_mapper: DynamoDBDataPreparationMapper = DynamoDBDataPreparationMapperImplemented(
     data_parsing_service)
 data_preparation_repository: DataPreparationRepository = DynamoDBDataPreparationRepository(
@@ -84,8 +85,8 @@ partition_service: PartitionsService = PartitionsServiceImplemented(lambda_confi
                                                                     boundaries_calculation_service,
                                                                     partition_descriptor_service,
                                                                     data_manifest_builder,
-                                                                    s3_service,
-                                                                    data_preparation_repository,)
+                                                                    s3_writer_service,
+                                                                    data_preparation_repository, )
 
 data_preparation_config_use_case: DataPreparationConfigUseCase = DataPreparationConfigUseCaseImplemented(partition_service, step_functions_service)
 

@@ -1,7 +1,7 @@
 from data_preparation.domain.models.preparation.final_manifest import FinalManifest
 from data_preparation.domain.models.preparation.input_manifest import InputManifest
 from data_preparation.domain.models.preparation.partition_descriptor import PartitionDescriptor
-from data_preparation.domain.services.date_parsing_service import DataParsingService
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 from data_preparation.infrastructure.out.dynamo.mappers.dynamo_db_data_preparation_mapper import DynamoDBDataPreparationMapper
 
 

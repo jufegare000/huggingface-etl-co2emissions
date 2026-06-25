@@ -6,5 +6,5 @@ from data_preparation.domain.models.preparation.model_metadata import ModelMetad
 
 class AIModelsMetadataService(Protocol):
 
-    def load_models_metadata(self, config: InputManifest) -> list[ModelMetadata]:
+    def load_models_metadata(self, input_manifest: InputManifest) -> list[ModelMetadata]:
         ...

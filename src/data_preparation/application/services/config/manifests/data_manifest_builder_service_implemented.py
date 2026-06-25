@@ -3,7 +3,7 @@ from data_preparation.domain.models.preparation.input_manifest import InputManif
 from data_preparation.domain.models.preparation.manifest_status import ManifestStatus
 from data_preparation.domain.models.preparation.partition_descriptor import PartitionDescriptor
 from data_preparation.domain.services.config.manifests.data_manifest_builder_service import DataManifestBuilderService
-from data_preparation.domain.services.date_parsing_service import DataParsingService
+from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
 
 
 class DataManifestBuilderServiceImplemented(DataManifestBuilderService):
