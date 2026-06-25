@@ -6,7 +6,7 @@ from data_preparation.application.services.s3.plain_text_reader_service_implemen
     PlainTextReaderServiceImplemented
 from data_preparation.domain.models.s3.bucket_uri import BucketURI
 from data_preparation.domain.services.s3.s3_parser_service import S3ParserService
-from data_preparation.domain.services.s3.s3_service import S3Service
+from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
 
 VAL_S3_URI = "s3://my-bucket/dataset.csv"
 VAL_BUCKET = "my-bucket"
@@ -42,7 +42,7 @@ def mock_s3_uri_service() -> MagicMock:
 
 @pytest.fixture
 def mock_s3_service() -> MagicMock:
-    return MagicMock(spec=S3Service)
+    return MagicMock(spec=S3ServiceDataPreparationService)
 
 
 @pytest.fixture
@@ -59,7 +59,7 @@ def service(
 ) -> PlainTextReaderServiceImplemented:
     return PlainTextReaderServiceImplemented(
         s3_uri_service=cast(S3ParserService, cast(object, mock_s3_uri_service)),
-        s3_service=cast(S3Service, cast(object, mock_s3_service)),
+        s3_service=cast(S3ServiceDataPreparationService, cast(object, mock_s3_service)),
     )
 
 

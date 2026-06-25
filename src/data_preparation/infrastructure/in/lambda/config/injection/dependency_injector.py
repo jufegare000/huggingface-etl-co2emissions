@@ -31,7 +31,7 @@ from data_preparation.application.services.s3.plain_text_reader_service_implemen
     PlainTextReaderServiceImplemented
 from data_preparation.application.services.s3.s3_parser_service_implemented import S3ParserServiceImplemented
 
-from data_preparation.application.services.s3.s3_service_implemented import S3ServiceImplemented
+from data_preparation.application.services.s3.s3_service_implemented import S3ServiceDataPreparationServiceImplemented
 
 from data_preparation.domain.services.config.lambda_function.lambda_config_validator_service import \
     LambdaConfigValidatorService
@@ -48,7 +48,7 @@ from data_preparation.infrastructure.out.dynamo.mappers.dynamo_db_data_preparati
 from data_preparation.infrastructure.out.dynamo.mappers.impl.dynamo_db_data_preparation_mapper_implemented import \
     DynamoDBDataPreparationMapperImplemented
 from data_preparation.infrastructure.out.dynamo.services.type_conversion_service import TypeConversionService
-from data_preparation.domain.services.s3.s3_service import S3Service
+from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
 from data_preparation.domain.persistence.data_preparation_repository import DataPreparationRepository
 from data_preparation.domain.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from data_preparation.infrastructure.out.dynamo.repository.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
@@ -56,7 +56,7 @@ from data_preparation.infrastructure.out.dynamo.repository.dynamo_db_data_prepar
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
 s3_uri_service: S3ParserService = S3ParserServiceImplemented()
-s3_service: S3Service = S3ServiceImplemented()
+s3_service: S3ServiceDataPreparationService = S3ServiceDataPreparationServiceImplemented()
 
 lambda_config_validation_service: LambdaConfigValidatorService = LambdaConfigValidatorServiceImplemented(s3_uri_service)
 lambda_config_service: LambdaConfigService = LambdaConfigServiceImplemented(data_parsing_service,

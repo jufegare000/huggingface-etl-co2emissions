@@ -10,7 +10,7 @@ from data_preparation.domain.services.config.partitions.partition_descriptor_ser
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
 from data_preparation.domain.services.partitions.partitions_service import PartitionsService
 from data_preparation.domain.models.preparation.partition_descriptor import PartitionDescriptor
-from data_preparation.domain.services.s3.s3_service import S3Service
+from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
 
 
 class PartitionsServiceImplemented(PartitionsService):
@@ -20,7 +20,7 @@ class PartitionsServiceImplemented(PartitionsService):
                  boundaries_calculation_service: BoundariesCalculationService,
                  partition_descriptor_service: PartitionDescriptorService,
                  data_manifest_builder: DataManifestBuilderService,
-                 s3_service: S3Service,
+                 s3_service: S3ServiceDataPreparationService,
                  data_preparation_repository: DataPreparationRepository,
 
                  ) -> None:

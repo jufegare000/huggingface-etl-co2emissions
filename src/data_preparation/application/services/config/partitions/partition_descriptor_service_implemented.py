@@ -4,12 +4,12 @@ from data_preparation.domain.models.preparation.model_metadata import ModelMetad
 from data_preparation.domain.models.preparation.partition_descriptor import PartitionDescriptor
 from data_preparation.domain.models.preparation.partition_status import PartitionStatus
 from data_preparation.domain.services.config.partitions.partition_descriptor_service import PartitionDescriptorService
-from data_preparation.domain.services.s3.s3_service import S3Service
+from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
 
 
 class PartitionDescriptorServiceImplemented(PartitionDescriptorService):
 
-    def __init__(self, s3_service: S3Service):
+    def __init__(self, s3_service: S3ServiceDataPreparationService):
         self.s3_service = s3_service
 
     def build_partition_descriptors(

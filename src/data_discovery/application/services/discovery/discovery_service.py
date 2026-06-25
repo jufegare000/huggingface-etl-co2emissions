@@ -11,11 +11,13 @@ import boto3
 import requests
 from botocore.exceptions import ClientError
 
-from data_preparation.application.services.config.environment.env_variables_service_implemented import \
+from domain.services.s3.s3_service import S3ServiceDataPreparationService
+from shared.application.services.config.env_variables_service_implemented import \
     EnvironmentVariablesService
 from data_discovery.application.services.discovery.discovery_job_constants_enum import DiscoveryJobConstantsEnum
 from shared.domain.exceptions.rate_limit_error import RateLimitError
 from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
+from shared.domain.services.security.secret_obtainer import SecretObtainer
 
 env_service = EnvironmentVariablesService()
 logger = logging.getLogger(__name__)
@@ -23,69 +25,19 @@ logger = logging.getLogger(__name__)
 
 class DiscoveryJobService():
 
-    def __init__(self, date_parsing_service: DataParsingService):
-        self.date_parsing_service = date_parsing_service
-
     s3 = boto3.client("s3")
-    secrets_client = boto3.client("secretsmanager")
 
-
-
-
-    # =============================================================================
-    # Secrets
-    # =============================================================================
-
-    def get_hf_token_from_secrets_manager(self, secret_name: str) -> str:
-        try:
-            response = self.secrets_client.get_secret_value(SecretId=secret_name)
-        except ClientError as exc:
-            raise RuntimeError(
-                f"Could not read Hugging Face token from Secrets Manager secret: {secret_name}"
-            ) from exc
-
-        secret_string = response.get("SecretString")
-
-        if not secret_string:
-            raise ValueError(
-                f"Secret {secret_name} does not contain SecretString. Binary secrets are not supported."
-            )
-
-        if not secret_string.strip().startswith("{"):
-            return secret_string.strip()
-
-        secret_json = json.loads(secret_string)
-
-        for key in ("HF_TOKEN", "hf_token", "token"):
-            token = secret_json.get(key)
-            if token:
-                return str(token).strip()
-
-        raise ValueError(
-            f"Secret {secret_name} is JSON but does not contain one of: HF_TOKEN, hf_token, token"
-        )
-
-
-    # =============================================================================
-    # S3 helpers
-    # =============================================================================
-
-    def s3_object_exists(self, bucket: str, key: str) -> bool:
-        try:
-            self.s3.head_object(Bucket=bucket, Key=key)
-            return True
-        except ClientError as exc:
-            code = exc.response.get("Error", {}).get("Code")
-            if code in ("404", "NoSuchKey", "NotFound"):
-                return False
-            raise
+    def __init__(self, date_parsing_service: DataParsingService, secrets_obtainer: SecretObtainer, s3_service: S3ServiceDataPreparationService):
+        self.date_parsing_service = date_parsing_service
+        self.secrets_obtainer = secrets_obtainer
+        self.s3_service = s3_service
 
 
     def read_json_from_s3(self, bucket: str, key: str) -> Optional[Dict[str, Any]]:
-        if not self.s3_object_exists(bucket, key):
+        if not self.s3_service.s3_object_exists(bucket, key):
             return None
 
-        response = self.s3.get_object(Bucket=bucket, Key=key)
+        response = self.s3_service.get_object(bucket, key)
         body = response["Body"].read().decode("utf-8")
         return json.loads(body)
 
@@ -459,7 +411,7 @@ class DiscoveryJobService():
 
 
     def run_discovery(self) -> Dict[str, Any]:
-        hf_token = self.get_hf_token_from_secrets_manager(self.get_hf_token_secret_name())
+        hf_token = self.secrets_obtainer.get_secret_token(secret_name=None)
 
         checkpoint = self.load_or_create_checkpoint()
 

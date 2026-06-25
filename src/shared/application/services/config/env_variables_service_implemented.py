@@ -1,5 +1,6 @@
-from data_preparation.domain.services.config.environment.env_variables_service import EnvVariablesService
 import os
+
+from shared.domain.services.config.environment.env_variables_service import EnvVariablesService
 
 
 class EnvironmentVariablesService(EnvVariablesService):

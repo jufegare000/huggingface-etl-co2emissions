@@ -1,6 +1,6 @@
 import pytest
 
-from data_preparation.application.services.config.environment.env_variables_service_implemented import \
+from shared.application.services.config.env_variables_service_implemented import \
     EnvironmentVariablesService
 
 VAR_NAME = "TARGET_ENVIRONMENT_VARIABLE"

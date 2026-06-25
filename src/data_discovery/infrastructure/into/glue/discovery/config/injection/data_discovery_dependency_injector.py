@@ -1,7 +1,14 @@
 from data_discovery.application.services.discovery.discovery_service import DiscoveryJobService
 from shared.application.services.date_parsing.date_parsing_service_implemented import SystemDateTimeServiceImplemented
+from shared.application.services.security.hugging_face_secret_service import HuggingFaceSecretService
 from shared.domain.services.date_parsing.date_parsing_service import DataParsingService
+from shared.domain.services.security.secret_obtainer import SecretObtainer
+from shared.infrastructure.out.secrets_manager.secret_manager_obtainer import SecretsManagerObtainer
 
 date_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 
-discovery_job_service: DiscoveryJobService = DiscoveryJobService(date_parsing_service)
+secret_obtainer: SecretObtainer = SecretsManagerObtainer()
+
+hugging_face_secret_obtainer: SecretObtainer = HuggingFaceSecretService(secret_obtainer)
+
+discovery_job_service: DiscoveryJobService = DiscoveryJobService(date_parsing_service, secret_obtainer)

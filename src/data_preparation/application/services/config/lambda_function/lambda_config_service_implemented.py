@@ -1,4 +1,4 @@
-from data_preparation.application.services.config.environment.env_variables_service_implemented import \
+from shared.application.services.config.env_variables_service_implemented import \
     EnvironmentVariablesService
 from data_preparation.application.services.config.lambda_function.data_preparation_enum import \
     DataPreparationConfigParams
