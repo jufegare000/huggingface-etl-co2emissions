@@ -9,9 +9,8 @@ from urllib.parse import parse_qs, urlparse
 
 import boto3
 import requests
-from botocore.exceptions import ClientError
 
-from domain.services.s3.s3_service import S3ServiceDataPreparationService
+from domain.services.s3.s3_writer_service import S3WriterService
 from shared.application.services.config.env_variables_service_implemented import \
     EnvironmentVariablesService
 from data_discovery.application.services.discovery.discovery_job_constants_enum import DiscoveryJobConstantsEnum
@@ -27,7 +26,7 @@ class DiscoveryJobService():
 
     s3 = boto3.client("s3")
 
-    def __init__(self, date_parsing_service: DataParsingService, secrets_obtainer: SecretObtainer, s3_service: S3ServiceDataPreparationService):
+    def __init__(self, date_parsing_service: DataParsingService, secrets_obtainer: SecretObtainer, s3_service: S3WriterService):
         self.date_parsing_service = date_parsing_service
         self.secrets_obtainer = secrets_obtainer
         self.s3_service = s3_service

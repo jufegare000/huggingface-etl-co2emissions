@@ -2,23 +2,27 @@ import csv
 import io
 from typing import Any
 from data_preparation.domain.models.s3.bucket_uri import BucketURI
-from data_preparation.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
+from shared.domain.plain_texts.plain_text_reader_service import PlainTextReaderService
 from data_preparation.domain.services.s3.s3_parser_service import S3ParserService
-from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
+from shared.domain.services.s3.s3_reader_service import S3ReaderService
+from shared.domain.services.s3.s3_writer_service import S3WriterService
 
 
 class PlainTextReaderServiceImplemented(PlainTextReaderService):
 
-    def __init__(self, s3_uri_service: S3ParserService, s3_service: S3ServiceDataPreparationService):
+    def __init__(self, s3_uri_service: S3ParserService,
+                 s3_writer_service: S3WriterService,
+                 s3_reader_service: S3ReaderService) -> None:
         self.s3_uri_service = s3_uri_service
-        self.s3_service = s3_service
+        self.s3_writer_service = s3_writer_service
+        self.s3_reader_service = s3_reader_service
 
     def read_csv_from_s3(self, s3_uri: str) -> list[dict[str, Any]]:
         parsed_uri: BucketURI = self.s3_uri_service.parse_s3_uri(s3_uri)
 
-        response = self.s3_service.get_object(
-           parsed_uri.bucket,
-           parsed_uri.value,
+        response = self.s3_reader_service.get_object(
+            parsed_uri.bucket,
+            parsed_uri.value,
         )
 
         text = response["Body"].read().decode("utf-8")

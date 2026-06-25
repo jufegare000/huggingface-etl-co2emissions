@@ -6,7 +6,7 @@ from data_preparation.domain.models.preparation.boundary import Boundary
 from data_preparation.domain.models.preparation.input_manifest import InputManifest
 from data_preparation.domain.models.preparation.model_metadata import ModelMetadata
 from data_preparation.domain.models.preparation.partition_status import PartitionStatus
-from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
+from shared.domain.services.s3.s3_writer_service import S3WriterService
 from data_preparation.application.services.config.partitions.partition_descriptor_service_implemented import (
     PartitionDescriptorServiceImplemented,
 )
@@ -45,13 +45,13 @@ INT_TWO = 2
 
 @pytest.fixture
 def mock_s3_service() -> MagicMock:
-    return MagicMock(spec=S3ServiceDataPreparationService)
+    return MagicMock(spec=S3WriterService)
 
 
 @pytest.fixture
 def service(mock_s3_service) -> PartitionDescriptorServiceImplemented:
     return PartitionDescriptorServiceImplemented(
-        s3_service=cast(S3ServiceDataPreparationService, cast(object, mock_s3_service))
+        s3_service=cast(S3WriterService, cast(object, mock_s3_service))
     )
 
 

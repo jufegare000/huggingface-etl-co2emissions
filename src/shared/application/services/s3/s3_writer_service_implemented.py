@@ -3,16 +3,16 @@ from typing import Any
 
 from botocore.exceptions import ClientError
 
-from data_preparation.domain.services.s3.s3_service import S3ServiceDataPreparationService
 import boto3
 import io
 import csv
 import json
 
 from shared.domain.models.datasets.bronze_datasets_columns import CSV_BROZE_COLUMNS
+from shared.domain.services.s3.s3_writer_service import S3WriterService
 
 
-class S3ServiceDataPreparationServiceImplemented(S3ServiceDataPreparationService):
+class S3WriterServiceImplemented(S3WriterService):
     s3_client: BaseClient = boto3.client("s3")
 
 
@@ -39,16 +39,3 @@ class S3ServiceDataPreparationServiceImplemented(S3ServiceDataPreparationService
             Body=json.dumps(payload, ensure_ascii=False, indent=2, default=str).encode("utf-8"),
             ContentType="application/json",
         )
-
-    def get_object(self, bucket: str, key: str) -> dict[str, Any]:
-        return self.get_client().get_object(Bucket=bucket, Key=key)
-
-    def s3_object_exists(self, bucket: str, key: str) -> bool:
-        try:
-            self.get_client().head_object(Bucket=bucket, Key=key)
-            return True
-        except ClientError as exc:
-            code = exc.response.get("Error", {}).get("Code")
-            if code in ("404", "NoSuchKey", "NotFound"):
-                return False
-            raise

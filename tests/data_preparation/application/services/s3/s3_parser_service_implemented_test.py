@@ -1,8 +1,6 @@
 import pytest
 from data_preparation.domain.models.s3.bucket_uri import BucketURI
-from data_preparation.application.services.s3.s3_parser_service_implemented import (
-    S3ParserServiceImplemented,
-)
+from shared.application.services.s3.s3_parser_service_implemented import S3ParserServiceImplemented
 
 VAL_VALID_URI = "s3://my-bucket/folder/data.csv"
 VAL_EXPECTED_BUCKET = "my-bucket"

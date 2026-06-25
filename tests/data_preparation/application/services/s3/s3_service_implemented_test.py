@@ -1,7 +1,7 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import pytest
 
-from data_preparation.application.services.s3.s3_service_implemented import S3ServiceDataPreparationServiceImplemented
+from shared.application.services.s3.s3_writer_service_implemented import S3WriterServiceImplemented
 
 PATCH_CSV_COLUMNS = "data_preparation.application.services.s3.s3_service_implemented.CSV_COLUMNS"
 
@@ -37,7 +37,7 @@ def mock_s3_client():
 
 @pytest.fixture
 def service(mock_s3_client):
-    impl = S3ServiceDataPreparationServiceImplemented()
+    impl = S3WriterServiceImplemented()
     impl.s3_client = mock_s3_client
     return impl
 
