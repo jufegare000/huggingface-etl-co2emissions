@@ -5,21 +5,22 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 import logging
 
+from raw_ingestion.domain.services.hf_model_fetcher import HfModelFetcher
+
 HF_MODEL_API_BASE_URL = "https://huggingface.co/api/models"
 DEFAULT_REQUEST_TIMEOUT_SECONDS = 60
 logger = logging.getLogger(__name__)
 
-class HfModelFetcherImplemented:
+class HfModelFetcherImplemented(HfModelFetcher):
 
     def fetch_model(self, model_id: str, hf_token: str) -> Dict[str, Any]:
         encoded_model_id = quote(model_id, safe="/")
         url = f"{HF_MODEL_API_BASE_URL}/{encoded_model_id}?full=true&cardData=true"
 
-        hf_token_cleaned = hf_token.strip().strip('"').strip("'")
         request = Request(
             url=url,
             headers={
-                "Authorization": f"Bearer {hf_token_cleaned}",
+                "Authorization": f"Bearer {hf_token}",
                 "Accept": "application/json",
             },
             method="GET",
