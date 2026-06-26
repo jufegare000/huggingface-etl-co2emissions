@@ -34,3 +34,8 @@ variable "enrichment_glue_job_name" {
   type        = string
   description = "Glue job name for enrichment / gold consolidation"
 }
+
+variable "recuperation_glue_job_name" {
+  type        = string
+  description = "Glue job name for retrying rate-limited models before gold consolidation"
+}

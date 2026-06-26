@@ -16,3 +16,9 @@ class IngestionS3Writer(Protocol):
 
     def read_partition_csv(self, bucket: str, key: str) -> List[Dict[str, Any]]:
         ...
+
+    def list_error_files(self, bucket: str, run_id: str) -> List[str]:
+        ...
+
+    def read_jsonl_lines(self, bucket: str, key: str) -> List[Dict[str, Any]]:
+        ...

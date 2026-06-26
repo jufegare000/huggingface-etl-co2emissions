@@ -26,12 +26,12 @@ class RowEnrichmentService:
         datasets_size_efficency = (downloads / datasets_size) if datasets_size > 0 else None
 
         return {
-            "modelId": hf_payload.get("id") or row.get("model_id"),
+            "model_id": hf_payload.get("id") or row.get("model_id"),
             "datasets": self._safe_json(datasets),
             "datasets_size": datasets_size,
             "co2_eq_emissions": co2_eq_emissions,
             "co2_reported": co2_eq_emissions is not None,
-            "source": row.get("co2_source"),
+            "co2_source": row.get("co2_source"),
             "training_type": row.get("training_type"),
             "geographical_location": row.get("geographical_location"),
             "environment": card_data.get("environment"),
@@ -51,8 +51,6 @@ class RowEnrichmentService:
             "run_id": run_id,
             "partition_id": partition_id,
             "enriched_at": enriched_at,
-            "model_id": row.get("model_id"),
-            "co2_source": row.get("co2_source"),
             "hardware_used": row.get("hardware_used"),
             "pipeline_tag": row.get("pipeline_tag"),
             "tags": row.get("tags"),

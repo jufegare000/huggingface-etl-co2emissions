@@ -23,6 +23,27 @@ class IngestionS3WriterImplemented:
     def write_success_marker(self, payload: Dict[str, Any], bucket: str, key: str) -> None:
         self._put_json(payload, bucket, key)
 
+    def list_error_files(self, bucket: str, run_id: str) -> List[str]:
+        prefix = f"enriched/hf-carbon/run_id={run_id}/"
+        keys: List[str] = []
+        paginator = self._s3.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for obj in page.get("Contents", []):
+                key = obj["Key"]
+                if key.endswith("/errors/errors.jsonl"):
+                    keys.append(key)
+        return keys
+
+    def read_jsonl_lines(self, bucket: str, key: str) -> List[Dict[str, Any]]:
+        response = self._s3.get_object(Bucket=bucket, Key=key)
+        text = response["Body"].read().decode("utf-8")
+        rows = []
+        for line in text.splitlines():
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+        return rows
+
     def read_partition_csv(self, bucket: str, key: str) -> List[Dict[str, Any]]:
         response = self._s3.get_object(Bucket=bucket, Key=key)
         text = response["Body"].read().decode("utf-8")

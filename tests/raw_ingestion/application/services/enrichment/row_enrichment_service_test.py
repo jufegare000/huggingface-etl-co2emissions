@@ -19,7 +19,7 @@ def service():
 
 def test_build_enriched_row_sets_model_id(service):
     result = service.build_enriched_row(MINIMAL_ROW, MINIMAL_HF_PAYLOAD, RUN_ID, PARTITION_ID, NOW)
-    assert result["modelId"] == "org/model-a"
+    assert result["model_id"] == "org/model-a"
 
 
 def test_build_enriched_row_sets_run_id_and_partition_id(service):

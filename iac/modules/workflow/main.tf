@@ -44,6 +44,21 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
         },
 
         ResultPath = "$.ingestion_results",
+        Next       = "DataRecuperation"
+      },
+
+      "DataRecuperation" = {
+        Type     = "Task",
+        Resource = "arn:aws:states:::glue:startJobRun.sync",
+        Parameters = {
+          "JobName" = var.recuperation_glue_job_name,
+          "Arguments" = {
+            "--run_id.$"             = "$.run_id",
+            "--control_table_name.$" = "$.control_table_name",
+            "--source_bucket.$"      = "$.bucket_name"
+          }
+        },
+        ResultPath = "$.recuperation_result",
         Next       = "GlueEnrichment"
       },
 
