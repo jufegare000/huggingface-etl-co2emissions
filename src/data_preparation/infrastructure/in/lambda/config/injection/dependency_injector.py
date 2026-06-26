@@ -52,12 +52,13 @@ from data_preparation.domain.persistence.data_preparation_repository import Data
 from data_preparation.domain.services.config.lambda_function.lambda_config_service import LambdaConfigService
 from data_preparation.infrastructure.out.dynamo.repository.dynamo_db_data_preparation_repository import DynamoDBDataPreparationRepository
 from shared.domain.services.s3.s3_writer_service import S3WriterService
+from shared.domain.services.s3.s3_reader_service import S3ReaderService
 
 data_parsing_service: DataParsingService = SystemDateTimeServiceImplemented()
 type_conversion_service: TypeConversionService = DynamoDBTypeConversionServiceImplemented()
 s3_uri_service: S3ParserService = S3ParserServiceImplemented()
 s3_writer_service: S3WriterService = S3WriterServiceImplemented()
-s3_reader_service: S3WriterService = S3ReaderServiceImplemented()
+s3_reader_service: S3ReaderService = S3ReaderServiceImplemented()
 
 lambda_config_validation_service: LambdaConfigValidatorService = LambdaConfigValidatorServiceImplemented(s3_uri_service)
 lambda_config_service: LambdaConfigService = LambdaConfigServiceImplemented(data_parsing_service,

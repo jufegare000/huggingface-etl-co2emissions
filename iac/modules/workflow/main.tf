@@ -35,8 +35,7 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
                 "Arguments" = {
                   "--run_id.$"             = "$.run_id",
                   "--partition_id.$"       = "$.partition.partition_id",
-                  "--control_table_name.$" = "$.control_table_name",
-                  "--hf_token_secret_name" = var.hf_token_secret_name
+                  "--control_table_name.$" = "$.control_table_name"
                 }
               },
               End = true

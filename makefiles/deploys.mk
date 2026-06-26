@@ -1,4 +1,4 @@
-.PHONY: init-dev validate-dev plan-dev deploy-dev destroy-dev deploy-lambda-dev build-glue-libs deploy-glue-dev deploy-security-dev deploy-security-base-dev update-hf-token update-hf-token-sm
+.PHONY: init-dev validate-dev plan-dev deploy-dev destroy-dev deploy-lambda-dev build-glue-libs deploy-glue-dev deploy-raw-ingestion-dev deploy-security-dev deploy-security-base-dev update-hf-token update-hf-token-sm
 
 include .env
 export
@@ -57,5 +57,15 @@ deploy-glue-dev: build-glue-libs validate-dev
 		-target=aws_s3_object.glue_src_zip \
 		-target=aws_s3_object.glue_discovery_script \
 		-target=module.glue_discovery_job \
+		-target=aws_s3_object.glue_script \
+		-target=module.glue_ingestion_job \
 		-out=tfplan && \
 	TF_VAR_hf_token="$$HF_TOKEN" terraform apply tfplan
+
+deploy-raw-ingestion-dev: build-glue-libs validate-dev
+	cd iac/environments/dev && TF_VAR_hf_token="$$HF_TOKEN" terraform plan \
+		-target=aws_s3_object.glue_src_zip \
+		-target=aws_s3_object.glue_script \
+		-target=module.glue_ingestion_job \
+		-out=tfplan_raw_ingestion && \
+	TF_VAR_hf_token="$$HF_TOKEN" terraform apply tfplan_raw_ingestion

@@ -24,7 +24,7 @@ resource "aws_glue_job" "huggingface_ingestion" {
     "--output_bucket"                    = var.s3_bucket_id
 
     "--additional-python-modules" = "huggingface_hub,requests,pandas"
-    "--hf_token_secret_name"   = var.hf_token_secret_name
-
+    "--customer-driver-env-vars"  = "CUSTOMER_HF_TOKEN_SECRET_NAME=${var.hf_token_secret_name}"
+    "--extra-py-files"            = "s3://${var.s3_bucket_id}/${var.extra_py_files_path}"
   }
 }
