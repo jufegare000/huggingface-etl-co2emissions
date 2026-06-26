@@ -5,10 +5,12 @@ from urllib.parse import parse_qs, urlparse
 import requests
 
 from data_discovery.application.services.discovery.discovery_job_constants_enum import DiscoveryJobConstantsEnum
+from data_discovery.domain.services.hugging_face.hf_models_api_client import HfModelsApiClient
 from shared.domain.exceptions.rate_limit_error import RateLimitError
+import logging
+logger = logging.getLogger(__name__)
 
-
-class HfModelsApiClientImplemented:
+class HfModelsApiClientImplemented(HfModelsApiClient):
     def __init__(self) -> None:
         self._session = requests.Session()
 
@@ -17,6 +19,7 @@ class HfModelsApiClientImplemented:
         hf_token: str,
         cursor: Optional[str],
     ) -> Tuple[List[Dict[str, Any]], Optional[str], Dict[str, str]]:
+        logger.info("my token: %s", hf_token)
         headers = {
             "Authorization": f"Bearer {hf_token}",
             "Accept": "application/json",
