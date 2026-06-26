@@ -4,11 +4,12 @@ provider "aws" {
 }
 
 variables {
-  project_name  = "hf-etl-test"
-  environment   = "test"
-  s3_bucket_id  = "test-bucket-id"
-  glue_role_arn = "arn:aws:iam::123456789012:role/test-glue-role"
-  script_path   = "scripts/raw_ingestion.py"
+  project_name        = "hf-etl-test"
+  environment         = "test"
+  s3_bucket_id        = "test-bucket-id"
+  glue_role_arn       = "arn:aws:iam::123456789012:role/test-glue-role"
+  script_path         = "scripts/raw_ingestion.py"
+  extra_py_files_path = "glue-libs/src.zip"
 }
 
 run "validate_glue_job_config" {
@@ -32,6 +33,16 @@ run "validate_glue_job_config" {
   assert {
     condition     = contains(keys(aws_glue_job.huggingface_ingestion.default_arguments), "--additional-python-modules")
     error_message = "Additional libraries are missing."
+  }
+
+  assert {
+    condition     = contains(keys(aws_glue_job.huggingface_ingestion.default_arguments), "--extra-py-files")
+    error_message = "extra-py-files (shared src.zip) argument is missing."
+  }
+
+  assert {
+    condition     = aws_glue_job.huggingface_ingestion.default_arguments["--extra-py-files"] == "s3://test-bucket-id/glue-libs/src.zip"
+    error_message = "extra-py-files does not point to the expected S3 path."
   }
 }
 

@@ -10,7 +10,7 @@ from data_preparation.domain.services.config.partitions.partition_descriptor_ser
 from data_preparation.domain.services.metadata.ai_metadata_models.models_metadata_service import AIModelsMetadataService
 from data_preparation.domain.services.partitions.partitions_service import PartitionsService
 from data_preparation.domain.models.preparation.partition_descriptor import PartitionDescriptor
-from data_preparation.domain.services.s3.s3_writer_service import S3WriterService
+from shared.domain.services.s3.s3_writer_service import S3WriterService
 
 
 class PartitionsServiceImplemented(PartitionsService):

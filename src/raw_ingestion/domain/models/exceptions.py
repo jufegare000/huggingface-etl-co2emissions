@@ -1,0 +1,2 @@
+class PartitionAlreadyCompletedException(Exception):
+    pass

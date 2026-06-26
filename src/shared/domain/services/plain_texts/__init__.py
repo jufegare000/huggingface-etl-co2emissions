@@ -1,0 +1,1 @@
+from shared.domain.services.plain_texts.plain_text_reader_service import PlainTextReaderService
