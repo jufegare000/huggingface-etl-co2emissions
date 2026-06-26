@@ -3,7 +3,7 @@ set -euo pipefail
 
 JOB_NAME="hf-juanfgallo-experiment-data-raw-ingestion-dev"
 RUN_ID="20260626021234"
-PARTITION_ID="000001"
+PARTITION_ID="000002"
 CONTROL_TABLE_NAME="hf-juanfgallo-experiment-data-dev-enrichment-control"
 AWS_PROFILE_ARG=$1
 

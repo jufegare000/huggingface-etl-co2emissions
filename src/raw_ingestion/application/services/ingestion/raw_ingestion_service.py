@@ -163,13 +163,6 @@ class RawIngestionService:
                 ingestion_metrics.to_dict(), bucket, f"{output_prefix}/metrics/metrics.json"
             )
 
-            self.rate_limit_service.sleep_if_budget_reached(
-                api_calls_in_window=api_calls_in_window,
-                partition_budget=partition_budget,
-                window_started_at=window_started_at,
-                window_seconds=window_seconds,
-            )
-
             success_key = f"{output_prefix}/_SUCCESS"
             success_payload = {
                 "run_id": run_id,
