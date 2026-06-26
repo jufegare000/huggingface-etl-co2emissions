@@ -45,3 +45,7 @@ variable "dynamodb_control_table_arn" {
 variable "enrichment_glue_job_arn" {
   type = string
 }
+
+variable "recuperation_glue_job_arn" {
+  type = string
+}

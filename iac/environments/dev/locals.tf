@@ -7,6 +7,8 @@ locals {
 
   glue_job_arn_calculated = "arn:aws:glue:${local.aws_region}:${local.account_id}:job/${local.project_name}-raw-ingestion-${var.environment}"
 
+  recuperation_glue_job_arn_calculated = "arn:aws:glue:${local.aws_region}:${local.account_id}:job/${local.project_name}-data-recuperation-${var.environment}"
+
   tags = {
     Project     = local.project_name
     Environment = var.environment

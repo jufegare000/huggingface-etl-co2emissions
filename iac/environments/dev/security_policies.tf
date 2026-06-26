@@ -14,6 +14,7 @@ module "security_policies" {
   sfn_role_name              = module.security_base.sfn_role_name
   dynamodb_control_table_arn = module.dynamodb_enrichment_control.table_arn
   enrichment_glue_job_arn    = module.glue_gold_job.enrichment_glue_job_arn
+  recuperation_glue_job_arn  = local.recuperation_glue_job_arn_calculated
   lambda_env_kms_key_arn     = module.kms.key_arn
 }
 

@@ -69,3 +69,11 @@ deploy-raw-ingestion-dev: build-glue-libs validate-dev
 		-target=module.glue_ingestion_job \
 		-out=tfplan_raw_ingestion && \
 	TF_VAR_hf_token="$$HF_TOKEN" terraform apply tfplan_raw_ingestion
+
+deploy-recuperation-dev: build-glue-libs validate-dev
+	cd iac/environments/dev && TF_VAR_hf_token="$$HF_TOKEN" terraform plan \
+		-target=aws_s3_object.glue_src_zip \
+		-target=aws_s3_object.glue_recuperation_script \
+		-target=aws_glue_job.data_recuperation \
+		-out=tfplan_recuperation && \
+	TF_VAR_hf_token="$$HF_TOKEN" terraform apply tfplan_recuperation
