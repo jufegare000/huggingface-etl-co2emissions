@@ -15,7 +15,7 @@ resource "aws_sfn_state_machine" "etl_orchestrator" {
       "IngestionMap" = {
         Type           = "Map",
         ItemsPath      = "$.partitions",
-        MaxConcurrency = 5,
+        MaxConcurrency = 0,
 
         Parameters = {
           "run_id.$"             = "$.run_id",
