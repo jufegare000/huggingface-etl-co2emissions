@@ -10,7 +10,7 @@ module "dynamodb_enrichment_control" {
   point_in_time_recovery_enabled = true
   ttl_enabled                    = true
   ttl_attribute_name             = "ttl"
-  deletion_protection_enabled    = true
+  deletion_protection_enabled    = false
 
   tags = merge(
     local.tags,

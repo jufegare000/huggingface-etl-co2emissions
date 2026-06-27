@@ -8,7 +8,6 @@ module "glue_ingestion_job" {
   glue_role_arn        = module.security_base.glue_role_arn
   script_path          = "scripts/raw_ingestion.py"
   hf_token_secret_name = module.hf_secrets.secret_arn
-  extra_py_files_path  = "glue-libs/src.zip"
 
   depends_on = [
     aws_s3_object.glue_script,
